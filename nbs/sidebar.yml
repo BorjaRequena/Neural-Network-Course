@@ -1,0 +1,15 @@
+website:
+  sidebar:
+    style: "docked"
+    collapse-level: 1
+    contents:
+      - section: Course
+        contents:
+          - course/linear_regression.ipynb
+          - course/polynomial_fit.ipynb
+          - course/logistic_regression.ipynb
+      - section: Documentation
+        contents:
+          - lib_nbs/00_data_gen.ipynb
+          - lib_nbs/01_losses.ipynb
+          - lib_nbs/02_optimizers.ipynb

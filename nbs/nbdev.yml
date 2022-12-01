@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "lectures_ml"
+  site-url: "https://adauphin.github.io/lectures_ml"
+  description: "Machine learning course of the master in Quantum Sciences"
+  repo-branch: master
+  repo-url: "https://github.com/adauphin/lectures_ml"

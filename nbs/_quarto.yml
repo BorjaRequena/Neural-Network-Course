@@ -1,0 +1,22 @@
+project:
+  type: website
+
+format:
+  html:
+    theme: yeti
+    css: styles.css
+    highlight-style: pygments
+    toc: true
+
+website:
+  twitter-card: true
+  open-graph: true
+  repo-actions: [issue]
+  navbar:
+    background: primary
+    collapse-below: lg
+    search: true
+  sidebar:
+    style: floating
+
+metadata-files: [nbdev.yml, sidebar.yml]

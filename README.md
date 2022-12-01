@@ -1,1 +1,1 @@
-Neural-Network-Course
+This file will be overwritten by `index.ipynb`
