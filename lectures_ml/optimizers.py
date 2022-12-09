@@ -43,7 +43,7 @@ def sgd_epoch(x:np.ndarray, # x data of N elements
     np.random.shuffle(mask)
     nb = x.size//bs
     lb = np.mod(x.size,bs)
-    n = nb if lb==0 else nb+1
+    n = nb #if lb==0 else nb+1
     
     loss, grads, fun = ll['loss'] , ll['grads'], ll['fun']
     
