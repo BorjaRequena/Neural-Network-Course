@@ -5,9 +5,11 @@ website:
     contents:
       - section: Course
         contents:
-          - course/linear_regression.ipynb
-          - course/polynomial_fit.ipynb
-          - course/logistic_regression.ipynb
+          - section: Linear models
+            contents:
+              - course/linear_regression.ipynb
+              - course/polynomial_fit.ipynb
+              - course/logistic_regression.ipynb
           - course/probabilistic_view.ipynb
       - section: Documentation
         contents:
