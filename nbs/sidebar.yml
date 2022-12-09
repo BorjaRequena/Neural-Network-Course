@@ -8,6 +8,7 @@ website:
           - course/linear_regression.ipynb
           - course/polynomial_fit.ipynb
           - course/logistic_regression.ipynb
+          - course/probabilistic_view.ipynb
       - section: Documentation
         contents:
           - lib_nbs/00_data_gen.ipynb

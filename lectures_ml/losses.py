@@ -25,5 +25,5 @@ def grad_MSE_lr(x:np.ndarray, # x data of N elements
     '''Computes the gradient of the mean square error loss function with respect to $a$ and $b$ and returns np.array([$\partial_a$ MSE,$\partial_b$ MSE])'''
     a, b = params['a'], params['b']
     yp = a*x+b
-    ga, gb = np.mean(2*x*(yp-y)), -np.mean(2*(yp-y))
+    ga, gb = np.mean(2*x*(yp-y)), np.mean(2*(yp-y))
     return np.array([ga,gb])
