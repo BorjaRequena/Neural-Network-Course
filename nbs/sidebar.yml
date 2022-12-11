@@ -4,6 +4,7 @@ website:
     collapse-level: 1
     contents:
       - section: Course
+        href: course/index.ipynb
         contents:
           - section: Linear models
             contents:

@@ -13,7 +13,7 @@ website:
   open-graph: true
   repo-actions: [issue]
   navbar:
-    background: primary
+    background: '#a6caf0'
     collapse-below: lg
     search: true
   sidebar:
