@@ -12,7 +12,7 @@ website:
               - course/polynomial_fit.ipynb
               - course/logistic_regression.ipynb
           - course/probabilistic_view.ipynb
-      - section: Documentation
+      - section: Library
         contents:
           - lib_nbs/00_data_gen.ipynb
           - lib_nbs/01_losses.ipynb
