@@ -52,7 +52,7 @@ as numpy, Pytorch and fastai.
 <td style="text-align: center;"><div width="25.0%"
 data-layout-align="center">
 <figure>
-<img src="figures/alex.png" data-fig.extended="false"
+<img src="./figures/alex.png" data-fig.extended="false"
 alt="Alexandre Dauphin" />
 <figcaption aria-hidden="true">Alexandre Dauphin</figcaption>
 </figure>
@@ -60,7 +60,7 @@ alt="Alexandre Dauphin" />
 <td style="text-align: center;"><div width="25.0%"
 data-layout-align="center">
 <figure>
-<img src="figures/borja.png" data-fig.extended="false"
+<img src="./figures/borja.png" data-fig.extended="false"
 alt="Borja Requena" />
 <figcaption aria-hidden="true">Borja Requena</figcaption>
 </figure>
@@ -68,7 +68,7 @@ alt="Borja Requena" />
 <td style="text-align: center;"><div width="25.0%"
 data-layout-align="center">
 <figure>
-<img src="figures/marcin.png" data-fig.extended="false"
+<img src="./figures/marcin.png" data-fig.extended="false"
 alt="Marcin Plodzien" />
 <figcaption aria-hidden="true">Marcin Plodzien</figcaption>
 </figure>
@@ -76,7 +76,7 @@ alt="Marcin Plodzien" />
 <td style="text-align: center;"><div width="25.0%"
 data-layout-align="center">
 <figure>
-<img src="figures/paolo.png" data-fig.extended="false"
+<img src="./figures/paolo.png" data-fig.extended="false"
 alt="Paolo Stornati" />
 <figcaption aria-hidden="true">Paolo Stornati</figcaption>
 </figure>
