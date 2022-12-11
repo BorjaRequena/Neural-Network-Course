@@ -45,12 +45,13 @@ def noisy_curve(coeffs, # array of the weights of the polynomial of degree d-1, 
                 noise=None, # tuple contining $\mu$ and $\sigma$. If  noise is `None`, then there is no noise 
                 nsamples=100 # number of samples for x
                ):
-    '''Create a dataset of nsamples in the interval following the polynomial curve $y=w^Tx$, where $x=(x^0...x^d)$ and  $x=(w^0...w^d)$ and adds a gaussian noise on y
+    '''Create a dataset of nsamples in the interval following the polynomial curve $y=w^Tx$, where $x=(x^0...x^d)$ and  $x=(w^0...w^d)$ and adds a gaussian noise on y.
+    
     Returns
     -------
     tuple
         - a random x vector in the interval of size nsamples
-        - the noisy vector following $y=w^Tx$
+        - the noisy vector following $y=w \cdot x$
     '''
     if x is None: x = np.random.uniform(low=interval[0], high=interval[1], size=nsamples)  
     if noise is None: 
