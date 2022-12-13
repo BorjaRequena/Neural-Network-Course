@@ -43,7 +43,6 @@ def sgd_epoch(x:np.ndarray, # x data of N elements
     np.random.shuffle(mask)
     nb = x.size//bs
     lb = np.mod(x.size,bs)
-    n = nb #if lb==0 else nb+1
     
     loss, grads, fun = ll['loss'] , ll['grads'], ll['fun']
     
@@ -52,8 +51,8 @@ def sgd_epoch(x:np.ndarray, # x data of N elements
     for p in pini: trackers[p] = [pini[p]]
 
     params = deepcopy(pini)
-    for i in range(n):
-        m = mask[i*bs:(i+1)*bs] if i<nb else mask[-lb:]
+    for i in range(nb):
+        m = mask[i*bs:(i+1)*bs]
         xx, yy = x[m], y[m]
         g= grads(xx,yy,params)
         trackers['loss'] = trackers['loss']+ [loss(x,y,fun,params)]
