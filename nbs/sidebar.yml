@@ -1,4 +1,7 @@
 website:
+  repo-url: https://github.com/BorjaRequena/Neural-Network-Course
+  repo-subdir: nbs
+  repo-actions: [issue,source]
   sidebar:
     style: "docked"
     collapse-level: 1
