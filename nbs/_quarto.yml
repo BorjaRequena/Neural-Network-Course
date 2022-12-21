@@ -16,6 +16,9 @@ website:
     background: '#a6caf0'
     collapse-below: lg
     search: true
+    right:
+      - icon: github
+        href: https://github.com/BorjaRequena/Neural-Network-Course
   sidebar:
     style: floating
 
