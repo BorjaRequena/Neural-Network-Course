@@ -14,6 +14,7 @@ website:
               - course/linear_regression.ipynb
               - course/polynomial_fit.ipynb
               - course/logistic_regression.ipynb
+              - course/perceptron.ipynb
           - course/probabilistic_view.ipynb
       - section: Library
         contents:

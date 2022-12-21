@@ -6,6 +6,9 @@ Machine Learning Quantum and Classical
 Welcome to the course of *Machine learning quantum and classical* of the
 master in quantum science and technology in Barcelona!
 
+<i class="bi bi-journals"></i> [Course and
+Documentation](https://borjarequena.github.io/Neural-Network-Course/)
+
 ## Course Description
 
 This course gives an introduction to machine learning and to deep neural
