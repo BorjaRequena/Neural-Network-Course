@@ -39,10 +39,10 @@ def sgd_epoch(x:np.ndarray, # x data of N elements
               bs=10, #Batch size
               eta=1E-3 #learning rate
              )->dict:#dictionary containing the vector of the losses ('loss') and the parameters (following the keys of pini) 
-    mask = np.arange(x.size)
+    mask = np.arange(y.size)
     np.random.shuffle(mask)
-    nb = x.size//bs
-    lb = np.mod(x.size,bs)
+    nb = y.size//bs
+    lb = np.mod(y.size,bs)
     
     loss, grads, fun = ll['loss'] , ll['grads'], ll['fun']
     
@@ -53,7 +53,10 @@ def sgd_epoch(x:np.ndarray, # x data of N elements
     params = deepcopy(pini)
     for i in range(nb):
         m = mask[i*bs:(i+1)*bs]
-        xx, yy = x[m], y[m]
+        if np.size(x.shape)==1:
+            xx, yy = x[m], y[m]
+        else:
+            xx, yy = x[m,:], y[m]
         g= grads(xx,yy,params)
         trackers['loss'] = trackers['loss']+ [loss(x,y,fun,params)]
         for i,p in enumerate(params): 
