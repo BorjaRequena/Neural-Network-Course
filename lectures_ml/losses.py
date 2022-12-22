@@ -74,10 +74,10 @@ def L_per(x:np.ndarray, # x data of N elements
        params: dict # Parameters of the function
       )->float:
     '''Given the data $x$ and $y$, this function computes the Loss of the perceptron algorithm'''
-    l = fun(x,**params)*y
-    l[l>0] = 0
-    l = np.mean(l)
-    return -l
+    l = -fun(x,**params)*y
+    ll = np.heaviside(l,0)
+    ll = np.mean(ll*l)
+    return ll
 
 # %% ../nbs/lib_nbs/01_losses.ipynb 11
 def grad_per(x:np.ndarray, # x data of N elements
@@ -86,8 +86,11 @@ def grad_per(x:np.ndarray, # x data of N elements
             )-> np.ndarray: # gradients
     '''Computes the gradient of the perceptron loss function and returns `np.array(grad_w)`'''
     w = params['w']
-    l = (w[0]+x@w[1:])*y
-    mask = np.arange(y.size)[l<0]
-    gradw0 = - np.mean(y[mask])
-    gradw = -np.einsum('i,ij->j',y[mask],x[mask,:])/y.size
-    return np.concatenate([[gradw0],gradw])
+    l = -(w[0]+x@w[1:])*y
+    ll = np.heaviside(l,0)
+    xx,yy = np.copy(x), np.copy(y)
+    yy= yy*ll
+    xx[:,0], xx[:,1] = xx[:,0]*yy, xx[:,1]*yy 
+    gradw0 = -np.mean(yy)
+    gradw = -np.mean(xx,axis=0)
+    return [np.concatenate([[gradw0],gradw])]
