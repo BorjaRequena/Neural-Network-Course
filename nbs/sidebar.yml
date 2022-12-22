@@ -16,6 +16,11 @@ website:
               - course/logistic_regression.ipynb
               - course/perceptron.ipynb
           - course/probabilistic_view.ipynb
+      - section: Homework
+        href: homeworks/index_homework.ipynb
+        contents:
+          - homeworks/01_regression.ipynb
+          - homeworks/02_perceptron.ipynb
       - section: Library
         contents:
           - lib_nbs/00_data_gen.ipynb
