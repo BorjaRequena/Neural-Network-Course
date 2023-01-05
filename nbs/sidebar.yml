@@ -20,6 +20,7 @@ website:
             contents:
               - course/neural_networks_from_scratch.ipynb
               - course/automatic_differentiation_pytorch.ipynb
+              - course/multiclass_classification_problem.ipynb
       - section: Homework
         href: homeworks/index_homework.ipynb
         contents:
