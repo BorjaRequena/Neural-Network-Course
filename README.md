@@ -24,20 +24,20 @@ as numpy, Pytorch and fastai.
 
 ## Syllabus
 
-| Date  | Lecture                                                     | Lecturer          |
-|-------|-------------------------------------------------------------|-------------------|
-| 13/12 | Introduction + Linear models                                | Alexandre Dauphin |
-| 15/12 | Linear models                                               | Alexandre Dauphin |
-| 20/12 | Linear models + Introduction to neural networks             | Alexandre Dauphin |
-| 22/12 | Neural network from scratch                                 | Alexandre Dauphin |
-| 10/01 | Pratical introduction to neural networks                    | Borja Requena     |
-| 12/01 | Neural Networks with Pytorch and fastai                     | Marcin Plodzien   |
-| 17/01 | Neural Networks with Pytorch and fastai                     | Marcin Plodzien   |
-| 19/01 | Interpretability                                            | Marcin Plodzien   |
-| 24/01 | Introduction to classical Monte Carlo and sampling          | Paolo Stornati    |
-| 26/01 | Restricted Boltzman machines                                | Paolo Stornati    |
-| 31/01 | Generative models                                           | Borja Requena     |
-| 02/02 | Overiew of the state of the art and Applications in Physics | Borja Requena     |
+| Date  | Lecture                                                                                      | Lecturer          |
+|-------|----------------------------------------------------------------------------------------------|-------------------|
+| 13/12 | Introduction + Linear models                                                                 | Alexandre Dauphin |
+| 15/12 | Linear models                                                                                | Alexandre Dauphin |
+| 20/12 | Linear models + Introduction to neural networks                                              | Alexandre Dauphin |
+| 22/12 | Probabilistic view on Machine Learning                                                       | Alexandre Dauphin |
+| 10/01 | Neural Network fundamentals: Implementation from scratch                                     | Marcin Płodzień   |
+| 12/01 | Neural Network fundamentals: Automatic differentiation                                       | Marcin Płodzień   |
+| 17/01 | Neural Network fundamentals: Multiclass classification problem and regularization techniques | Marcin Płodzień   |
+| 19/01 | Convolutional Neural Networks                                                                | Borja Requena     |
+| 24/01 | Introduction to classical Monte Carlo and sampling                                           | Paolo Stornati    |
+| 26/01 | Restricted Boltzman machines                                                                 | Paolo Stornati    |
+| 31/01 | Generative models                                                                            | Borja Requena     |
+| 02/02 | Overiew of the state of the art and Applications in Physics                                  | Borja Requena     |
 
 ## Instructors
 
@@ -72,8 +72,8 @@ alt="Borja Requena" />
 data-layout-align="center">
 <figure>
 <img src="./figures/marcin.png" data-fig.extended="false"
-alt="Marcin Plodzien" />
-<figcaption aria-hidden="true">Marcin Plodzien</figcaption>
+alt="Marcin Płodzień" />
+<figcaption aria-hidden="true">Marcin Płodzień</figcaption>
 </figure>
 </div></td>
 <td style="text-align: center;"><div width="25.0%"

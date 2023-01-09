@@ -16,11 +16,12 @@ website:
               - course/logistic_regression.ipynb
               - course/perceptron.ipynb
           - course/probabilistic_view.ipynb
-          - section: Neural Networks from scratch 
+          - section: Neural Networks fundamentals 
             contents:
               - course/neural_networks_from_scratch.ipynb
               - course/automatic_differentiation_pytorch.ipynb
               - course/multiclass_classification_problem.ipynb
+              - course/regularization_techniques.ipynb
       - section: Homework
         href: homeworks/index_homework.ipynb
         contents:
