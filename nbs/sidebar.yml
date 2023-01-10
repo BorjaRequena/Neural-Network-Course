@@ -16,6 +16,12 @@ website:
               - course/logistic_regression.ipynb
               - course/perceptron.ipynb
           - course/probabilistic_view.ipynb
+          - section: Machine learning application overview
+            href: course/applications-index.ipynb
+            contents:
+              - course/applications-cv.ipynb
+              - course/applications-nlp.ipynb
+              - course/applications-tabular.ipynb
           - section: Neural Networks fundamentals 
             contents:
               - course/neural_networks_from_scratch.ipynb
