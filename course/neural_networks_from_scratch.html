@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Marcin Płodzień">
+
+<title>lectures_ml - Implementation from scratch</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="lectures_ml - Implementation from scratch">
+<meta property="og:description" content="In this section we will implement training algorithm for single perceptron with sigmoid activation function.">
+<meta property="og:site-name" content="lectures_ml">
+<meta name="twitter:title" content="lectures_ml - Implementation from scratch">
+<meta name="twitter:description" content="In this section we will implement training algorithm for single perceptron with sigmoid activation function.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">lectures_ml</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/Neural-Network-Course"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Implementation from scratch</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../course/index.html" class="sidebar-item-text sidebar-link">Course</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Linear models</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_regression.html" class="sidebar-item-text sidebar-link">Linear regression</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/polynomial_fit.html" class="sidebar-item-text sidebar-link">Polynomial fit</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/logistic_regression.html" class="sidebar-item-text sidebar-link">Logistic regression</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/perceptron.html" class="sidebar-item-text sidebar-link">Perceptron</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/probabilistic_view.html" class="sidebar-item-text sidebar-link">A probabilistic view on machine learning</a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../course/applications-index.html" class="sidebar-item-text sidebar-link">Machine learning application overview</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications-cv.html" class="sidebar-item-text sidebar-link">Typical tasks in computer vision</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications-nlp.html" class="sidebar-item-text sidebar-link">Typical tasks in natural language processing</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications-tabular.html" class="sidebar-item-text sidebar-link">Typical tasks with structured data</a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">Neural Networks fundamentals</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/neural_networks_from_scratch.html" class="sidebar-item-text sidebar-link active">Implementation from scratch</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/automatic_differentiation_pytorch.html" class="sidebar-item-text sidebar-link">Automatic differentiation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/multiclass_classification_problem.html" class="sidebar-item-text sidebar-link">Multiclass classification</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/regularization_techniques.html" class="sidebar-item-text sidebar-link">Neural Networks regularization</a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homeworks/index_homework.html" class="sidebar-item-text sidebar-link">Homework</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/regression.html" class="sidebar-item-text sidebar-link">1 - Regression</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/perceptron.html" class="sidebar-item-text sidebar-link">2 - Perceptron</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Library</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/data_gen.html" class="sidebar-item-text sidebar-link">Data Generation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/losses.html" class="sidebar-item-text sidebar-link">Loss functions and gradients</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/optimizers.html" class="sidebar-item-text sidebar-link">Optimizers</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sigmoid-perceptron" id="toc-sigmoid-perceptron" class="nav-link active" data-scroll-target="#sigmoid-perceptron"><span class="toc-section-number">1</span>  Sigmoid perceptron</a>
+  <ul class="collapse">
+  <li><a href="#sigmoid-perceptron-update" id="toc-sigmoid-perceptron-update" class="nav-link" data-scroll-target="#sigmoid-perceptron-update"><span class="toc-section-number">1.1</span>  Sigmoid perceptron update</a></li>
+  </ul></li>
+  <li><a href="#single-layer-neural-network" id="toc-single-layer-neural-network" class="nav-link" data-scroll-target="#single-layer-neural-network"><span class="toc-section-number">2</span>  Single layer Neural Network</a>
+  <ul class="collapse">
+  <li><a href="#single-layer-neural-network-definition" id="toc-single-layer-neural-network-definition" class="nav-link" data-scroll-target="#single-layer-neural-network-definition"><span class="toc-section-number">2.1</span>  Single layer Neural Network definition</a>
+  <ul class="collapse">
+  <li><a href="#feed-forward-pass" id="toc-feed-forward-pass" class="nav-link" data-scroll-target="#feed-forward-pass"><span class="toc-section-number">2.1.1</span>  Feed-forward pass</a></li>
+  <li><a href="#update-parameters" id="toc-update-parameters" class="nav-link" data-scroll-target="#update-parameters"><span class="toc-section-number">2.1.2</span>  Update parameters</a></li>
+  </ul></li>
+  <li><a href="#example-task-handwritten-digits-with-the-mnist-dataset" id="toc-example-task-handwritten-digits-with-the-mnist-dataset" class="nav-link" data-scroll-target="#example-task-handwritten-digits-with-the-mnist-dataset"><span class="toc-section-number">2.2</span>  Example task: handwritten digits with the MNIST dataset</a></li>
+  <li><a href="#activation-functions" id="toc-activation-functions" class="nav-link" data-scroll-target="#activation-functions"><span class="toc-section-number">2.3</span>  Activation functions</a></li>
+  </ul></li>
+  <li><a href="#optimization-algorithms" id="toc-optimization-algorithms" class="nav-link" data-scroll-target="#optimization-algorithms"><span class="toc-section-number">3</span>  Optimization algorithms</a>
+  <ul class="collapse">
+  <li><a href="#stochastic-gradient-descent---sgd" id="toc-stochastic-gradient-descent---sgd" class="nav-link" data-scroll-target="#stochastic-gradient-descent---sgd"><span class="toc-section-number">3.1</span>  Stochastic gradient descent - SGD</a></li>
+  <li><a href="#momentum-algorithm" id="toc-momentum-algorithm" class="nav-link" data-scroll-target="#momentum-algorithm"><span class="toc-section-number">3.2</span>  Momentum algorithm</a></li>
+  <li><a href="#adaptative-gradient---adagrad" id="toc-adaptative-gradient---adagrad" class="nav-link" data-scroll-target="#adaptative-gradient---adagrad"><span class="toc-section-number">3.3</span>  Adaptative Gradient - Adagrad</a></li>
+  <li><a href="#adadelta-extension-of-the-adaptative-gradient" id="toc-adadelta-extension-of-the-adaptative-gradient" class="nav-link" data-scroll-target="#adadelta-extension-of-the-adaptative-gradient"><span class="toc-section-number">3.4</span>  Adadelta: extension of the Adaptative Gradient</a></li>
+  <li><a href="#adaptive-moment-estimation---adam" id="toc-adaptive-moment-estimation---adam" class="nav-link" data-scroll-target="#adaptive-moment-estimation---adam"><span class="toc-section-number">3.5</span>  Adaptive Moment Estimation - Adam</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="toc-section-number">4</span>  References</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action">Report an issue</a></p><p><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/neural_networks_from_scratch.ipynb" class="toc-action">View source</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Implementation from scratch</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Marcin Płodzień </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="sigmoid-perceptron" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Sigmoid perceptron</h1>
+<p>In this section we will implement training algorithm for single perceptron with sigmoid activation function.<img src="neural_networks_from_scratch_files/figure-html/060d7926-1-nn_perceptron.svg" class="img-fluid" alt="nn_perceptron.svg"></p>
+<p>Let us start with defining our perceptron with sigmoid activation function.</p>
+<ol type="1">
+<li>Considered perceptron is a mapping from <span class="math inline">\(\hat{X} \in \mathbb{R}^M \to \hat{Y} \in \mathbb{R}\)</span>, We denote <span class="math inline">\(M\)</span> as a number of features, i.e.&nbsp;size of the input to the perceptron.</li>
+</ol>
+<p>We consider set of <span class="math inline">\(N\)</span> tuples <span class="math inline">\((\hat{x}_i, \hat{y}_i)\)</span> belonging to training data <span class="math inline">\(\hat{x}_i \in \hat{X}_{train}\)</span> and <span class="math inline">\(\hat{y}_i \in \hat{Y}_{train}\)</span></p>
+<ol start="2" type="1">
+<li>Mathematical formulation of the perceptron is <span class="math inline">\(\hat{y}_i = \sigma(z_i)\)</span>, where <span class="math inline">\(z_i = \hat{x}_i W + B\)</span>. <span class="math inline">\(W\)</span> are weights, <span class="math inline">\(B\)</span> is bias, and activation function reads <span class="math inline">\(\sigma(z_i) = \frac{1}{1 + e^{-z_i}}\)</span>.</li>
+</ol>
+<section id="sigmoid-perceptron-update" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="sigmoid-perceptron-update"><span class="header-section-number">1.1</span> Sigmoid perceptron update</h2>
+<p>Training of a perceptron is done by an iterative update of weights <span class="math inline">\(W\)</span> and bias <span class="math inline">\(B\)</span> in order to minimize the loss function <span class="math inline">\(L\)</span>. As a loss function we consider mean-squared error:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+L &amp; = \frac{1}{N}\sum_{i=1}^N L_i\\
+L_i &amp; = \frac{1}{2}(y_i - \hat{y}_i)^2,
+\end{split}
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(y_i\)</span> is our prediction.</p>
+<p>We update weights <span class="math inline">\(W\)</span> and bias <span class="math inline">\(B\)</span> with the gradient descent procedure:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+W &amp; \leftarrow W - \eta \frac{\partial L}{\partial W} = W - \frac{\eta}{N} \sum_{i=1}^N \frac{\partial L_i}{\partial W}\\
+B &amp; \leftarrow B - \eta \frac{\partial L}{\partial B} = W - \frac{\eta}{N} \sum_{i=1}^N \frac{\partial L_i}{\partial B},
+\end{split}
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(\eta\)</span> is a learning rate.</p>
+<p>Let us calculate gradients:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+\frac{\partial L_i}{\partial W} &amp; = (y_i - \hat{y}_i)\frac{\partial y_i}{\partial W}\\
+\frac{\partial L_i}{\partial B} &amp; = (y_i - \hat{y}_i)\frac{\partial y_i}{\partial B}\\
+y_i &amp; = \sigma(z_i) \\
+z_i &amp; = x_iW + B
+\end{split}
+\end{equation}\]</span></p>
+<p>With the chain rule we have:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+\frac{\partial y_i}{\partial W} &amp; = \frac{\partial \sigma(z_i)}{\partial z_i}\frac{\partial z_i}{\partial W} \\
+\frac{\partial y_i}{\partial B} &amp; = \frac{\partial \sigma(z_i)}{\partial z_i}\frac{\partial z_i}{\partial B}
+\end{split}
+\end{equation}\]</span></p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Show that update rule for weights <span class="math inline">\(W\)</span> and bias <span class="math inline">\(B\)</span> is:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+W &amp; \leftarrow W - \frac{\eta }{N}\sum_{i=1}^N (y_i - \hat{y}_i) y_i(1-y_i)x_i\\
+B &amp; \leftarrow B - \frac{\eta }{N}\sum_{i=1}^N (y_i - \hat{y}_i) y_i(1-y_i)
+\end{split}
+\end{equation}\]</span></p>
+</div>
+</div>
+</section>
+</section>
+<section id="single-layer-neural-network" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Single layer Neural Network</h1>
+<p>Here, we will consider single layer Neural Network with sigmoid activation function. <img src="neural_networks_from_scratch_files/figure-html/b5b9d64c-0f76-4ac5-82b2-2e814f3e78bb-1-nn-2.svg" class="img-fluid" alt="nn-2.svg"></p>
+<section id="single-layer-neural-network-definition" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="single-layer-neural-network-definition"><span class="header-section-number">2.1</span> Single layer Neural Network definition</h2>
+<p>Let’s consider particular single layer Neural Network. The input of the network has <span class="math inline">\(M=10\)</span> nodes, hidden layer has <span class="math inline">\(K = 6\)</span> nodes, and the output layer has <span class="math inline">\(J = 2\)</span> nodes. The first weigth matrix <span class="math inline">\(W_1\)</span> has shape <span class="math inline">\([M,K]\)</span>, and the second weight matrix <span class="math inline">\(W_2\)</span> has shape <span class="math inline">\([K ,J]\)</span>.</p>
+<p>We have training data set <span class="math inline">\(\hat{X}\)</span> containing <span class="math inline">\(N\)</span> entries, i.e.&nbsp;training data is a matrix of shape <span class="math inline">\([N, M]\)</span>. The “labels” <span class="math inline">\(\hat{Y}\)</span> are matrix of shape <span class="math inline">\([N,J]\)</span>.</p>
+<section id="feed-forward-pass" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="feed-forward-pass"><span class="header-section-number">2.1.1</span> Feed-forward pass</h3>
+<p>Now, let’s consider feed-forward pass of the training data <span class="math inline">\(\hat{X}\)</span> through our Neural Network.</p>
+<ol type="1">
+<li><span class="math inline">\(h = \hat{X}W_{1} + B_1\)</span> <span class="math inline">\(\rightarrow\)</span> <span class="math inline">\(h\)</span> has shape: <span class="math inline">\([N, M] \times [M, K] = [N,K]\)</span></li>
+<li><span class="math inline">\(H = \sigma(h)\)</span> <span class="math inline">\(\rightarrow\)</span> <span class="math inline">\(H\)</span> has shape: <span class="math inline">\([N,K]\)</span></li>
+<li><span class="math inline">\(g = HW_{2}\)</span> <span class="math inline">\(\rightarrow\)</span> <span class="math inline">\(g\)</span> has shape: <span class="math inline">\([N,K] \times [K,J] = [N,J]\)</span></li>
+<li><span class="math inline">\(Y = \sigma(g)\)</span> <span class="math inline">\(\rightarrow\)</span> <span class="math inline">\(Y\)</span> has shape: <span class="math inline">\([N,J]\)</span></li>
+</ol>
+</section>
+<section id="update-parameters" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="update-parameters"><span class="header-section-number">2.1.2</span> Update parameters</h3>
+<p>We will use the MSE loss function denoted in matrix rerpesentation as <span class="math inline">\(L = \frac{1}{2N}||Y - \hat{Y}||^2\)</span>,</p>
+<p>Assuming learning rate <span class="math inline">\(\eta\)</span> the update of <span class="math inline">\(W_1\)</span>, <span class="math inline">\(B_1\)</span>, and <span class="math inline">\(W_2\)</span> is:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+  W_1 &amp; = W_1 - \frac{\eta}{N}\frac{\partial L}{\partial W_1} \\
+  B_1 &amp; = B_1 - \frac{\eta}{N}\frac{\partial L}{\partial B_1} \\
+  W_2 &amp; = W_2 - \frac{\eta}{N}\frac{\partial L}{\partial W_2}.
+\end{split}
+\end{equation}\]</span></p>
+<p>Let us calculate gradients of the loss function with respect to <span class="math inline">\(W_1\)</span>, <span class="math inline">\(B_1\)</span>, <span class="math inline">\(W_2\)</span> using the chain rule:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+\frac{\partial L}{\partial W_{2}} &amp; = \frac{\partial L}{\partial Y}\frac{\partial Y}{\partial g}\frac{\partial g}{\partial W_{2}} \\
+\frac{\partial L}{\partial W_{1}} &amp; = \frac{\partial L}{\partial Y}\frac{\partial Y}{\partial g}\frac{\partial g}{\partial H}\frac{\partial H}{\partial h}\frac{\partial h}{\partial W_{1}}\\
+\frac{\partial L}{\partial B_{1}} &amp; = \frac{\partial L}{\partial Y}\frac{\partial Y}{\partial g}\frac{\partial g}{\partial H}\frac{\partial H}{\partial h}\frac{\partial h}{\partial B_{1}}
+\end{split}
+\end{equation}\]</span></p>
+<ol start="6" type="1">
+<li>We have</li>
+</ol>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+\frac{\partial L}{\partial Y} &amp; = Y - \hat{Y} \\
+\frac{\partial Y}{\partial g} &amp; = Y(1-Y) \\
+\frac{\partial g}{\partial W_{2}} &amp; = H \\
+\frac{\partial g}{\partial H} &amp; = W_{2} \\
+\frac{\partial H}{\partial h} &amp; = H(1-H) \\
+\frac{\partial h}{\partial W_1} &amp; = \hat{X}\\
+\frac{\partial h}{\partial B_1} &amp; = \mathbb{1}
+\end{split}
+\end{equation}\]</span></p>
+<ol start="7" type="1">
+<li>Let’s define helper functions</li>
+</ol>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+Q_2 &amp; \equiv \frac{\partial L}{\partial Y}\frac{\partial Y}{\partial g}  \\
+Q_1 &amp; \equiv \frac{\partial L}{\partial Y}\frac{\partial Y}{\partial g}\frac{\partial g}{\partial H}\frac{\partial H}{\partial h}
+\end{split}
+\end{equation}\]</span></p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Show explicitly that <span class="math inline">\(Q_1\)</span>, and <span class="math inline">\(Q_2\)</span> read: <span class="math display">\[\begin{equation}
+\begin{split}
+Q_2 &amp; \equiv \frac{\partial L}{\partial Y}\frac{\partial Y}{\partial g} = (Y-\hat{Y})Y(1-Y) \\
+Q_1 &amp; \equiv \frac{\partial L}{\partial Y}\frac{\partial Y}{\partial g}\frac{\partial g}{\partial H}\frac{\partial H}{\partial h} = Q_1 W_{2}H(1-H)
+\end{split}
+\end{equation}\]</span></p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Show that update rules for weights <span class="math inline">\(W_1\)</span> and <span class="math inline">\(W_2\)</span> are</p>
+<p><span class="math inline">\(W_2 = W_2 - \frac{\eta}{N}H^TQ_2\)</span></p>
+<p><span class="math inline">\(B_1 = B_1 - \frac{\eta}{N}Q_1\)</span></p>
+<p><span class="math inline">\(W_1 = W_1 - \frac{\eta}{N}X^TQ_1\)</span></p>
+<p><span class="math inline">\(Q_2 = (Y-\hat{Y})Y(1-Y)\)</span></p>
+<p><span class="math inline">\(Q_1 = Q_2W_2^TH(1-H)\)</span></p>
+<p>Hint 1: Operations in <span class="math inline">\((Y-\hat{Y})Y(1-Y)\)</span> are element-wise multiplications.</p>
+<p>Hint 2: Operations in <span class="math inline">\(H(1-H)\)</span> are element-wise multiplications.</p>
+<p>Hint 3: Resulting weights updates have to be the same dimension as the weight matrices.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="example-task-handwritten-digits-with-the-mnist-dataset" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="example-task-handwritten-digits-with-the-mnist-dataset"><span class="header-section-number">2.2</span> Example task: handwritten digits with the MNIST dataset</h2>
+<p>Here, we will train our single layer Neural Network on a handwritten digits from MNIST dataset. MNIST stands for Modified National Institute of Standards and Technology. Architecture of our single layer Neural Network:</p>
+<ol type="1">
+<li>Input layer with <span class="math inline">\(M = 28\times28\)</span> nodes</li>
+<li>Hidden layer with <span class="math inline">\(K = 25\)</span> nodes</li>
+<li>Ouptut layer with <span class="math inline">\(J = 1\)</span> node</li>
+</ol>
+<p>We take sigmoid activation function. <img src="neural_networks_from_scratch_files/figure-html/19c9589d-1-nn_MNIST.svg" class="img-fluid" alt="nn_MNIST.svg"></p>
+<p>We start by importing the MNIST dataset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sigmoid(x):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>np.exp(<span class="op">-</span>x))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>(x_train, y_train), (x_test, y_test) <span class="op">=</span> tf.keras.datasets.mnist.load_data()</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>N_train_all <span class="op">=</span> <span class="dv">60000</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>N_test_all <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>Nx <span class="op">=</span> <span class="dv">28</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>Ny <span class="op">=</span> <span class="dv">28</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> x_train.shape <span class="op">==</span> (N_train_all, Nx, Ny)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> x_test.shape <span class="op">==</span> (N_test_all, Nx, Ny)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> y_train.shape <span class="op">==</span> (N_train_all,)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> y_test.shape <span class="op">==</span> (N_test_all,)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2023-01-02 18:23:53.267188: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-01-02 18:23:53.365798: I tensorflow/core/util/port.cc:104] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2023-01-02 18:23:53.726895: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory
+2023-01-02 18:23:53.726930: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory
+2023-01-02 18:23:53.726933: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.</code></pre>
+</div>
+</div>
+<p>Let’s have a look at examples of the data</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,<span class="dv">10</span>):</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> np.where(y_train[:]<span class="op">==</span>i)[<span class="dv">0</span>] <span class="co"># find indices of i-digit</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,k, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,k):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        ax[j].imshow(x_train[idx[j],:])</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-4.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-5.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-6.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-7.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-8.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-9.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-3-output-10.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Before passing the data through the model, we have to first preprocess them:</p>
+<ol type="1">
+<li><p>Each picture we transform as <span class="math inline">\(\vec{x}_i \to \frac{\vec{x}_i - \text{mean}(\vec{x}_i)}{\text{std}(\vec{x})}\)</span></p></li>
+<li><p>Because output node has simgoid activation function returning number in range <span class="math inline">\([0\dots1]\)</span> we map each label <span class="math inline">\(y \in \{0,1,2,\dots,9\}\)</span> to a number in range <span class="math inline">\([0,1]\)</span> via <span class="math inline">\(y_i \to \frac{1}{10}y_i\)</span>. The reason is due to the fact, that we are using sigmoid activation function in the last output node, which gives number in range <span class="math inline">\([0,1]\)</span>.</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> normalize_data(x):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (x <span class="op">-</span> np.mean(x))<span class="op">/</span>np.std(x)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Let us transform data</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> np.zeros((N_train_all, Nx<span class="op">*</span>Ny))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>X_test  <span class="op">=</span> np.zeros((N_test_all,  Nx<span class="op">*</span>Ny))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>Y_train <span class="op">=</span> np.zeros((N_train_all, <span class="dv">1</span>))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>Y_test  <span class="op">=</span> np.zeros((N_test_all,  <span class="dv">1</span>))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,N_train_all):</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    X_train[i,:] <span class="op">=</span> x_train[i,:].reshape((Nx<span class="op">*</span>Ny,))    <span class="co"># flatten images</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    X_train[i,:] <span class="op">=</span> normalize_data(X_train[i,:])      <span class="co"># normalize data to mean = 0, std = 1</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    Y_train[i] <span class="op">=</span> y_train[i]<span class="op">/</span><span class="fl">10.0</span>                     <span class="co"># each digit maps to number [0,...,1]</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,N_test_all):</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    X_test[i,:] <span class="op">=</span> x_test[i,:].reshape((Nx<span class="op">*</span>Ny,))      <span class="co"># flatten images</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    X_test[i,:] <span class="op">=</span> normalize_data(X_test[i,:])        <span class="co"># normalize data to mean = 0, std = 1    </span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    Y_test[i] <span class="op">=</span> y_test[i]<span class="op">/</span><span class="fl">10.0</span>    </span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># We choose small subset from training data</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>N_train <span class="op">=</span> <span class="dv">60000</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> np.random.randint(<span class="dv">0</span>, N_train_all, N_train)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> X_train[idx,:]</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>Y_train <span class="op">=</span> Y_train[idx]    </span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co"># We choose small subset from training data</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>N_test <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> np.random.randint(<span class="dv">0</span>, N_test_all, N_test)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> X_test[idx,:]</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>Y_test <span class="op">=</span> Y_test[idx]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Shuffle training data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> np.arange(<span class="dv">0</span>,N_train)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>idx_shuffle <span class="op">=</span> np.random.permutation(idx)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> X_train[idx_shuffle,:]</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>Y_train <span class="op">=</span> Y_train[idx_shuffle]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Setting Neural Network shapes</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># NN parameters</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> Nx<span class="op">*</span>Ny  <span class="co"># number of nodes in the input layer</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="dv">21</span> <span class="co"># number of nodes in the hidden layer</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>J <span class="op">=</span> <span class="dv">1</span>      <span class="co"># number of nodes in the output layer </span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Training loop parameters</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>eta <span class="op">=</span> <span class="dv">50</span> <span class="co"># learning rate</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>N_epoch <span class="op">=</span> <span class="dv">1000</span> <span class="co"># training epochs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hint: Having given vector "a", we want to stack it n times</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>stack_helper <span class="op">=</span> np.ones((n))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>])</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.outer(stack_helper,a)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1. 2. 3. 4.]
+ [1. 2. 3. 4.]
+ [1. 2. 3. 4.]
+ [1. 2. 3. 4.]
+ [1. 2. 3. 4.]]</code></pre>
+</div>
+</div>
+<p>Training loop: feed-forward + backpropagation</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>W_1_initial <span class="op">=</span> <span class="dv">1</span><span class="op">*</span>(np.random.rand(M,K) <span class="op">-</span> <span class="fl">0.5</span>)  <span class="co"># initialize weights, uniform distribution [-1,1]</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>W_2_initial <span class="op">=</span> <span class="dv">1</span><span class="op">*</span>(np.random.rand(K,J) <span class="op">-</span> <span class="fl">0.5</span>)  <span class="co"># initialize weights, uniform distribution [-1,1]</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>b_1_initial <span class="op">=</span> <span class="dv">1</span><span class="op">*</span>(np.random.rand(K)   <span class="op">-</span> <span class="fl">0.5</span>)   <span class="co"># initialize bias, uniform distribution [-1,1]</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>W_1 <span class="op">=</span> np.copy(W_1_initial)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>W_2 <span class="op">=</span> np.copy(W_2_initial)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>b_1 <span class="op">=</span> np.copy(b_1_initial)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>loss_train_vs_epoch <span class="op">=</span> []</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>loss_test_vs_epoch <span class="op">=</span> []</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>stack_helper_train <span class="op">=</span> np.ones((X_train.shape[<span class="dv">0</span>]))   <span class="co">#  </span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>B_1 <span class="op">=</span> np.outer(stack_helper_train, b_1)            <span class="co"># matrix of biases with shape [N_train, K]</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,N_epoch): <span class="co"># Training loop/Backpropagation</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Feed-forward pass of the training data </span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> X_train<span class="op">@</span>W_1</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> h <span class="op">+</span> B_1</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> sigmoid(h)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> H<span class="op">@</span>W_2</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    Y <span class="op">=</span> sigmoid(g)      </span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    loss_train <span class="op">=</span> <span class="fl">0.5</span><span class="op">*</span>np.mean((Y <span class="op">-</span> Y_train)<span class="op">**</span><span class="dv">2</span>)    </span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    loss_train_vs_epoch.append(loss_train)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Helpers for calculating update</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    Q_2 <span class="op">=</span> (Y<span class="op">-</span>Y_train)<span class="op">*</span>Y<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span>Y) <span class="co"># element-wise multiplication</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    Q_1 <span class="op">=</span> Q_2<span class="op">@</span>W_2.T<span class="op">*</span>H<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span>H)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Update weights</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    W_2 <span class="op">=</span> W_2 <span class="op">-</span> eta<span class="op">/</span>N_train<span class="op">*</span>H.T<span class="op">@</span>Q_2       <span class="co">#W_2 update </span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    W_1 <span class="op">=</span> W_1 <span class="op">-</span> eta<span class="op">/</span>N_train<span class="op">*</span>X_train.T<span class="op">@</span>Q_1 <span class="co">#W_1 update</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    B_1 <span class="op">=</span> B_1 <span class="op">-</span> eta<span class="op">/</span>N_train<span class="op">*</span>Q_1</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Feed-forward pass of the batch test data </span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>    b_1 <span class="op">=</span> B_1[<span class="dv">0</span>,:] <span class="co"># we need to extract only one row </span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>    stack_helper_test <span class="op">=</span> np.ones((X_test.shape[<span class="dv">0</span>]))</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>    B_1_test <span class="op">=</span> np.outer(stack_helper_test,b_1)</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> X_test<span class="op">@</span>W_1</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> h <span class="op">+</span> B_1_test</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> sigmoid(h)</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> H<span class="op">@</span>W_2</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>    Y <span class="op">=</span> sigmoid(g)      </span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>    loss_test <span class="op">=</span> <span class="fl">0.5</span><span class="op">*</span>np.mean((Y <span class="op">-</span> Y_test)<span class="op">**</span><span class="dv">2</span>)    </span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    loss_test_vs_epoch.append(loss_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plt.plot(loss_test_vs_epoch, label <span class="op">=</span> <span class="st">"test data"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plt.plot(loss_train_vs_epoch, label <span class="op">=</span> <span class="st">"training data"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"MNIST"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"epoch"</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"loss"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;matplotlib.legend.Legend&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Now, we can check how our trained Neural Network can predict labels from uknown test data. But first, we have to map our outputs of neural networks into digits, i.e.&nbsp;<span class="math inline">\(y^{\text{pred}}_i \to y^{\text{pred}}_i = \text{int}(10 y^{\text{pred}}_i)\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>b_1 <span class="op">=</span> B_1[<span class="dv">0</span>,:]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Make prediction on training data</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>stack_helper_train <span class="op">=</span> np.ones((X_train.shape[<span class="dv">0</span>]))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>B_1_train <span class="op">=</span> np.outer(stack_helper_train,b_1)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> X_train<span class="op">@</span>W_1</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> h <span class="op">+</span> B_1_train</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> sigmoid(h)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> H<span class="op">@</span>W_2</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>Y_train_pred <span class="op">=</span> sigmoid(g)     </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#Make prediction on test data</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>stack_helper_test <span class="op">=</span> np.ones((X_test.shape[<span class="dv">0</span>]))</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>B_1_test <span class="op">=</span> np.outer(stack_helper_test,b_1)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> X_test<span class="op">@</span>W_1</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> h <span class="op">+</span> B_1_test</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> sigmoid(h)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> H<span class="op">@</span>W_2</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>Y_test_pred <span class="op">=</span> sigmoid(g)  </span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>Y_train_pred_round <span class="op">=</span> np.around(Y_train_pred<span class="op">*</span><span class="dv">10</span>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>Y_test_pred_round <span class="op">=</span> np.around(Y_test_pred<span class="op">*</span><span class="dv">10</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>Y_train_true <span class="op">=</span> Y_train<span class="op">*</span><span class="fl">10.</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>Y_test_true <span class="op">=</span> Y_test<span class="op">*</span><span class="fl">10.</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>confusion_matrix_train <span class="op">=</span> np.zeros((<span class="dv">11</span>,<span class="dv">11</span>))</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,N_train):</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    confusion_matrix_train[<span class="bu">int</span>(Y_train_pred_round[i]), <span class="bu">int</span>(Y_train_true[i])] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>confusion_matrix_test <span class="op">=</span> np.zeros((<span class="dv">11</span>,<span class="dv">11</span>))</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,N_test):</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    confusion_matrix_test[<span class="bu">int</span>(Y_test_pred_round[i]), <span class="bu">int</span>(Y_test_true[i])] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>accuracy_train <span class="op">=</span> np.<span class="bu">sum</span>(np.diagonal(confusion_matrix_train))<span class="op">/</span>np.<span class="bu">sum</span>(confusion_matrix_train)</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>accuracy_test  <span class="op">=</span> np.<span class="bu">sum</span>(np.diagonal(confusion_matrix_test))<span class="op">/</span>np.<span class="bu">sum</span>(confusion_matrix_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">2</span>, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].imshow(confusion_matrix_train)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"Train | Accuracy : "</span> <span class="op">+</span> <span class="st">"</span><span class="sc">{:2.2f}</span><span class="st">"</span>.<span class="bu">format</span>(accuracy_train<span class="op">*</span><span class="dv">100</span>) <span class="op">+</span> <span class="st">"%"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="st">"true label"</span>)<span class="op">;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"predicted label"</span>)<span class="op">;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xticks(np.arange(<span class="dv">0</span>,<span class="dv">10</span>))<span class="op">;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_yticks(np.arange(<span class="dv">0</span>,<span class="dv">10</span>))<span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].imshow(confusion_matrix_test)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"Test | Accuracy : "</span> <span class="op">+</span> <span class="st">"</span><span class="sc">{:2.2f}</span><span class="st">"</span>.<span class="bu">format</span>(accuracy_test<span class="op">*</span><span class="dv">100</span>) <span class="op">+</span> <span class="st">"%"</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="st">"true label"</span>)<span class="op">;</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"predicted label"</span>)<span class="op">;</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xticks(np.arange(<span class="dv">0</span>,<span class="dv">10</span>))<span class="op">;</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_yticks(np.arange(<span class="dv">0</span>,<span class="dv">10</span>))<span class="op">;</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>As we can see, the accuracy matrix has quite diagonal structure! With accuracy <span class="math inline">\(\sim 60\%\)</span> we show that our super-simple architecture with one hidden layer and one output node can predict the handwritten digit <span class="math inline">\(6\)</span> times better than random guess!</p>
+<p>Let’s have a look at different predictions:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,<span class="dv">10</span>):</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> np.where(Y_test_true[:]<span class="op">==</span>i)[<span class="dv">0</span>] <span class="co"># find indices of i-digit</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,k, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,k):</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        title_string <span class="op">=</span> <span class="st">" </span><span class="ch">\n</span><span class="st"> P:"</span> <span class="op">+</span> <span class="st">"</span><span class="sc">{:01d}</span><span class="st">"</span>.<span class="bu">format</span>(<span class="bu">int</span>(Y_test_pred_round[idx[j]][<span class="dv">0</span>]))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        ax[j].set_title(title_string)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        ax[j].imshow(X_test[idx[j],:].reshape(Nx,Ny))</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-4.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-5.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-6.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-7.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-8.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-9.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="neural_networks_from_scratch_files/figure-html/cell-12-output-10.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Check training/test accuracy and confusion matrix for different numbers of training data samples.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Set initial biases to zero, and freeze its training. Check the change in the confusion matrix and accuracy.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Check prediction accuracy and confusion matrix for weights and bias initialization taken from: 1. Uniform distribution [-0.5,0.5] 2. Uniform distribution [0,1] 3. Normal distribution <span class="math inline">\({\cal N}(0,1)\)</span></p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Implement function for adaptative learning rate <span class="math inline">\(\eta\)</span> with the following rule: check relative change of the training loss after 10 epochs: if it is smaller than 5%, then <span class="math inline">\(\eta_{new} = \kappa\eta_{old}\)</span>, <span class="math inline">\(\kappa&lt;1\)</span>.</p>
+</div>
+</div>
+</section>
+<section id="activation-functions" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="activation-functions"><span class="header-section-number">2.3</span> Activation functions</h2>
+<p>So far we have been using softmax <span class="math inline">\(\sigma(z) = \frac{1}{1+e^{-x}}\)</span> activation function only. The other activation functions are:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="neural_networks_from_scratch_files/figure-html/2cd53b13-1-0_lo8wlkwReDcXkts0.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">0_lo8wlkwReDcXkts0.png</figcaption><p></p>
+</figure>
+</div>
+<p>Loss function should be calculated accordignly to the given activation function!</p>
+</section>
+</section>
+<section id="optimization-algorithms" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Optimization algorithms</h1>
+<p>There are many different optimization algorithms that can be used to train neural networks, and the choice of algorithm can have a significant impact on the performance of the model [<a href="https://www.deeplearningbook.org/">1</a>]</p>
+<p>In general, optimization algorithms for training neural networks can be divided into two categories: first-order methods, which only use the gradient of the loss function with respect to the model’s parameters, and second-order methods, which also use the Hessian matrix of the loss function. Second-order methods can be more computationally expensive, but they may also be more effective in certain cases.</p>
+<section id="stochastic-gradient-descent---sgd" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="stochastic-gradient-descent---sgd"><span class="header-section-number">3.1</span> Stochastic gradient descent - SGD</h2>
+<p>In the standard gradient descent, we computes the gradient of the cost function with respect to the parameters for the entire training dataset. As such, batch gradient descent can be very slow and intractable for datasets that don’t fit in memory. Batch gradient descent also doesn’t allow us to update our model online, i.e.&nbsp;with new examples on-the-fly.</p>
+<p>In SGD gradient descent, a mini-batch with <span class="math inline">\(m\)</span> samples from the training dataset, and the model’s parameters are updated based on the average loss across the samples in each mini-batch. This is in contrast to batch gradient descent, where the model’s parameters are updated based on the average loss across the entire dataset.</p>
+<p>By using mini-batches, mini-batch gradient descent is able to make faster progress through the training dataset compared to batch gradient descent, and it can also make use of vectorized operations, which can make the training process more efficient.</p>
+<p>SGD performs a parameter update for each training example.</p>
+</section>
+<section id="momentum-algorithm" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="momentum-algorithm"><span class="header-section-number">3.2</span> Momentum algorithm</h2>
+<p>Momentum optimization is an algorithm that can be used to improve the training of a neural network. It works by adding a fraction of the previous weight update to the current weight update, which helps the model to make faster progress in the right direction and avoid getting stuck in local minima. This fraction is called the momentum coefficient, and it is a hyperparameter that can be adjusted to achieve the best results for a given problem.</p>
+<p>The momentum algorithm accumulates a history of the past gradients and continues to move in their direction. Momentum helps accelerate SGD by adding a fraction <span class="math inline">\(\gamma\)</span>:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+g_t &amp;=  \frac{\partial L(\theta_{t-1})}{\partial \theta}\\
+v_t &amp;= \gamma v_{t-1} - \eta g_t \\
+\theta &amp;= \theta + v_t,
+\end{split}
+\end{equation}\]</span> where <span class="math inline">\(t\)</span> enumerates training epoch, <span class="math inline">\(\theta\)</span> are trainable parameters of the Neural Network, while <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\eta\)</span> are hyperparameters.</p>
+<p>The velocity <span class="math inline">\(v\)</span> accumulates the gradient of the loss function <span class="math inline">\(L\)</span>; the larger <span class="math inline">\(\gamma\)</span> with respect to <span class="math inline">\(\eta\)</span>, the more previous gradients affect the current direction. In standard SGD algorithm, the size step of update was the gradient multiplied by the learning rate. Now, the size step depends on how large and how aligned sequence of gradients are.</p>
+<p>The momentum algorithm can be understand as simulation of a particle subjected to Newtonian dynamics. The position of particle at time <span class="math inline">\(t\)</span> is given by value of the trainable parameters <span class="math inline">\(\theta(t)\)</span>. The particle experiences the net force <span class="math display">\[\begin{equation}
+f(t) = \frac{\partial^2}{\partial t^2}\theta(t),
+\end{equation}\]</span> which can be expressed as a set of first time-derivatives: <span class="math display">\[\begin{equation}
+\begin{split}
+v(t) = \frac{\partial}{\partial t}\theta(t) \\
+f(t) = \frac{\partial}{\partial t}v(t)
+\end{split}
+\end{equation}\]</span></p>
+<p>In the momentum optimization we have two forces: 1. One force is proportional to the negative gradient of the cost function <span class="math display">\[\begin{equation}
+f_1 = -\frac{\partial L(\theta)}{\partial \theta}.
+\end{equation}\]</span> This force pushes the particle downhill along the cost function surface.</p>
+<ol start="2" type="1">
+<li>Second force is proportional to <span class="math inline">\(-v(t)\)</span>. Physical intuition is that this force corresponds to viscous drag, as if the particle must push through a resistant medium.</li>
+</ol>
+<p>In addition to speeding up training, momentum optimization can also help the model to generalize better to new data.</p>
+</section>
+<section id="adaptative-gradient---adagrad" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="adaptative-gradient---adagrad"><span class="header-section-number">3.3</span> Adaptative Gradient - Adagrad</h2>
+<p>Adaptative Gradient algorithm [<a href="https://jmlr.org/papers/v12/duchi11a.html">2</a>] is based on the idea of adapting the learning rate to the parameters, performing larger updates for infrequent and smaller updates for frequent parameters.</p>
+<p>The AdaGrad algorithm works by accumulating the squares of the gradients for each parameter, and then scaling the learning rate for each parameter by the inverse square root of this sum. This has the effect of reducing the learning rate for parameters that have been updated frequently, and increasing the learning rate for parameters that have been updated infrequently.</p>
+<p>The update rule for AdaGrad algorithm reads</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+\theta_{t+1} &amp; = \theta_t + \Delta\theta,
+\end{split}
+\end{equation}\]</span></p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+\Delta \theta &amp;= - \frac{\eta}{\sqrt{diag( \epsilon\mathbb{1} + G_t )}} \odot g_t,\\
+g_t &amp;= \frac{\partial L(\theta_{t-1})}{\partial \theta}\\
+G_t &amp;= \sum_{\tau = 1}^{t} g_\tau g_\tau^T.
+\end{split}
+\end{equation}\]</span> where <span class="math inline">\(\odot\)</span> means element-wise multiplication. The <span class="math inline">\(\epsilon \ll 0\)</span> is a regularizing parameter, preventing from division by 0.</p>
+<p>Adagrad eliminates the need to manually tune the learning rate, i.e.&nbsp;initially <span class="math inline">\(\eta \ll 1\)</span>, and it is effectively adapted during training process. Algorithm can be sensitive to the choice of the initial learning rate, and it may require careful tuning to achieve good results.</p>
+</section>
+<section id="adadelta-extension-of-the-adaptative-gradient" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="adadelta-extension-of-the-adaptative-gradient"><span class="header-section-number">3.4</span> Adadelta: extension of the Adaptative Gradient</h2>
+<p>Adadelta algorithm [<a href="https://arxiv.org/pdf/1212.5701.pdf">3</a>] is based on the idea of adapting the learning rate to the parameters, similar to AdaGrad, but it does not require the specification of a learning rate as a hyperparameter. Adadelta uses an Exponentially Weighted Moving Average (EWMA) of the squared gradients to scale the learning rate. The Exponentially Weighted Moving Average (EWMA) for <span class="math inline">\(x_t\)</span> is defined recursively as:</p>
+<p><span class="math display">\[\begin{equation}
+E[x]_t = \gamma E[x]_{t-1} + (1-\gamma) x_t
+\end{equation}\]</span></p>
+<p>In general Adadelta algorithm uses EMWA for <span class="math inline">\(g_t^2\)</span> instead <span class="math inline">\(G_t = \sum_{\tau = 1}^t g_\tau g_\tau^T\)</span>, as in Adagrad, i.e.:</p>
+<p><span class="math display">\[\begin{equation}
+E[g^2]_t = \gamma E[g^2]_{t-1} + (1-\gamma)g_t^2,
+\end{equation}\]</span> and we update parameters as <span class="math display">\[\begin{equation}
+\begin{split}
+\theta_{t+1} &amp; = \theta_t + \Delta\theta_t \\
+\Delta\theta_t &amp; = - \frac{\eta}{\sqrt{E[g^2]_t + \epsilon}}\odot g_t.
+\end{split}
+\end{equation}\]</span> Let’s introduce notation <span class="math inline">\(RMS[g]_t = \sqrt{E[g^2]_t + \epsilon}\)</span>, where <span class="math inline">\(RMS\)</span> stands for root-mean-square.</p>
+<p>However, Matthew D. Zeiler, the Author of Adadelta noticed that the parameter updates <span class="math inline">\(\Delta\theta\)</span> being applied to <span class="math inline">\(\theta\)</span> shoud have matching units. Considering, that the parameter had some hypothetical units <span class="math inline">\([\theta]\)</span>, the changes to the parameter should be changes in those units as well, i.e. <span class="math display">\[\begin{equation}
+[\theta] = [\Delta\theta].
+\end{equation}\]</span> However, assuming the loss function is unitless, we have <span class="math display">\[\begin{equation}
+[\Delta\theta] = \frac{1}{[\theta]},
+\end{equation}\]</span> thus units do not match. This is the case for SGD, Momentum, or Adagrad algorithms.</p>
+<p>The second order methods such as Newton’s method that use the second derivative information preserve units for the parameter updates. For function <span class="math inline">\(f(x)\)</span>, we have <span class="math display">\[\begin{equation}
+\Delta x = \frac{\frac{\partial f}{\partial x}}{\frac{\partial^2 f}{\partial x^2}},
+\end{equation}\]</span> thus units <span class="math inline">\([\Delta x] = [x]\)</span> are preserved. Keeping this in mind, the update rule in Adadelta algorithm is defined as: <span class="math display">\[\begin{equation}
+\begin{split}
+  \theta_{t+1} &amp; = \theta_t + \Delta_t\theta_t \\
+  \Delta\theta_t &amp;= -\frac{RMS[\Delta\theta]_{t-1}}{RMS[g]_t}\odot g_t.
+\end{split}
+\end{equation}\]</span></p>
+<p>This has the effect of automatically adapting the learning rate to the characteristics of the problem, which can make it easier to use than other optimization algorithms that require manual tuning of the learning rate.</p>
+</section>
+<section id="adaptive-moment-estimation---adam" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="adaptive-moment-estimation---adam"><span class="header-section-number">3.5</span> Adaptive Moment Estimation - Adam</h2>
+<p>Adam algorithm [<a href="https://arxiv.org/pdf/1412.6980.pdf">4</a>] combines the ideas of momentum optimization and Adagrad to make more stable updates and achieve faster convergence.</p>
+<p>Like momentum optimization, Adam uses an exponentially decaying average of the previous gradients to determine the direction of the update. This helps the model to make faster progress in the right direction and avoid oscillations. Like AdaGrad, Adam also scales the learning rate for each parameter based on the inverse square root of an exponentially decaying average of the squared gradients. This has the effect of reducing the learning rate for parameters that have been updated frequently, and increasing the learning rate for parameters that have been updated infrequently.</p>
+<p>Adam uses Exponentially Modified Moving Average for gradients and its square:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+g_t &amp;= \frac{\partial L(\theta_{t-1})}{\partial \theta}\\
+m_t &amp;= \beta_1 m_{t-1} + (1-\beta_1)g_t \\
+v_t &amp;= \beta_2 v_{t-1} + (1-\beta_2)g_t^2.
+\end{split}
+\end{equation}\]</span></p>
+<p>The update rule for the parameters reads:</p>
+<p><span class="math display">\[\begin{equation}
+\Delta \theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{\hat{v}_t} + \epsilon}\hat{m}_t,
+\end{equation}\]</span> where <span class="math display">\[\begin{equation}
+\begin{split}
+\hat{m}_t &amp;= \frac{m_t}{1-\beta_1}\\
+\hat{v}_t &amp;= \frac{v_t}{1-\beta_2},
+\end{split}
+\end{equation}\]</span> are bias-corrected first and second gradient moments estimates.</p>
+<p>Authors suggest to set <span class="math inline">\(\beta_1 = 0.9\)</span>, <span class="math inline">\(\beta_2 = 0.999\)</span>, <span class="math inline">\(\eta = 10^{-8}\)</span>.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Implement mini-batch SGD algorithm. In the training loop feed-forward training data with fixed size batches and update gradients after each batch. Steps:</p>
+<ol type="1">
+<li><p>Fix batch size <span class="math inline">\(n_b\)</span></p></li>
+<li><p>Calculate number of batches <span class="math inline">\(N_b = N_{train}/n_b\)</span></p></li>
+<li><p>Loop over training epochs:</p>
+<p>3.1. Loop over number of batches:</p>
+<pre><code> 3.1.1 at each iteration randomly choose batch size training points from training data set
+
+ 3.1.2 feed-forward through network
+
+ 3.1.3 backpropagate and update weights</code></pre>
+<p>3.2 Calculate loss on test dataset, and on a single batch from the training dataset</p></li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="references" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> References</h1>
+<p>[1] Goodfellow, I., Bengio, Y., Courville, A. “Deep Learning”, MIT Press (2016), https://www.deeplearningbook.org/</p>
+<p>[2] Duchi, J., Hazan, E., &amp; Singer, Y. (2011). Adaptive Subgradient Methods for Online Learning and Stochastic Optimization. Journal of Machine Learning Research, 12, 2121–2159 \</p>
+<p>[3] Zeiler, M. D. (2012). ADADELTA: An Adaptive Learning Rate Method. Retrieved from http://arxiv.org/abs/1212.5701</p>
+<p>[4] Kingma, D. P., &amp; Ba, J. L. (2015). Adam: a Method for Stochastic Optimization. International Conference on Learning Representations, 1–13. https://arxiv.org/abs/1412.6980</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
