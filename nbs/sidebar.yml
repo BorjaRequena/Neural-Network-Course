@@ -28,6 +28,7 @@ website:
               - course/automatic_differentiation_pytorch.ipynb
               - course/multiclass_classification_problem.ipynb
               - course/regularization_techniques.ipynb
+          - course/Monte_carlo_ising_model.ipynb          
       - section: Homework
         href: homeworks/index_homework.ipynb
         contents:
