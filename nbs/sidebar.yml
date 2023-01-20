@@ -34,6 +34,7 @@ website:
         contents:
           - homeworks/01_regression.ipynb
           - homeworks/02_perceptron.ipynb
+          - homeworks/paper_report.ipynb
       - section: Library
         contents:
           - lib_nbs/00_data_gen.ipynb
