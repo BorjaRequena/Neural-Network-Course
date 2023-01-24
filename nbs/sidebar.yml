@@ -29,7 +29,7 @@ website:
               - course/VQE.ipynb
               - course/multiclass_classification_problem.ipynb
               - course/regularization_techniques.ipynb
-          - course/Monte_carlo_ising_model.ipynb          
+          - course/montecarlo_integration.ipynb          
       - section: Homework
         href: homeworks/index_homework.ipynb
         contents:
