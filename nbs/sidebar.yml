@@ -26,6 +26,7 @@ website:
             contents:
               - course/neural_networks_from_scratch.ipynb
               - course/automatic_differentiation_pytorch.ipynb
+              - course/VQE.ipynb
               - course/multiclass_classification_problem.ipynb
               - course/regularization_techniques.ipynb
           - course/Monte_carlo_ising_model.ipynb          
