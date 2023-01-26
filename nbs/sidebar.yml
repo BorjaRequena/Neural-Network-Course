@@ -36,6 +36,7 @@ website:
           - homeworks/01_regression.ipynb
           - homeworks/02_perceptron.ipynb
           - homeworks/03_generative.ipynb
+          - homeworks/04_ml_physics.ipynb
           - homeworks/paper_report.ipynb
       - section: Library
         contents:
