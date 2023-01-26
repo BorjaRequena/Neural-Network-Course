@@ -29,7 +29,8 @@ website:
               - course/VQE.ipynb
               - course/multiclass_classification_problem.ipynb
               - course/regularization_techniques.ipynb
-          - course/montecarlo_integration.ipynb          
+          - course/montecarlo_integration.ipynb
+          - course/rbm.ipynb
       - section: Homework
         href: homeworks/index_homework.ipynb
         contents:
