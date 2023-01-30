@@ -3,11 +3,11 @@
 # %% auto 0
 __all__ = ['gradient_descent', 'sgd_epoch', 'sgd']
 
-# %% ../nbs/lib_nbs/02_optimizers.ipynb 1
+# %% ../nbs/lib_nbs/02_optimizers.ipynb 2
 import numpy as np
 from copy import deepcopy
 
-# %% ../nbs/lib_nbs/02_optimizers.ipynb 3
+# %% ../nbs/lib_nbs/02_optimizers.ipynb 4
 def gradient_descent(x:np.ndarray, # x data of N elements
                      y:np.ndarray, # y data of N elements
                      pini:dict, # initial parameters of the loss function
@@ -31,7 +31,7 @@ def gradient_descent(x:np.ndarray, # x data of N elements
             params[p] = trackers[p][-1]
     return trackers
 
-# %% ../nbs/lib_nbs/02_optimizers.ipynb 4
+# %% ../nbs/lib_nbs/02_optimizers.ipynb 5
 def sgd_epoch(x:np.ndarray, # x data of N elements
               y:np.ndarray, # y data of N elements
               pini:dict, # initial parameters of the loss function
@@ -64,7 +64,7 @@ def sgd_epoch(x:np.ndarray, # x data of N elements
             params[p] = trackers[p][-1]
     return trackers
 
-# %% ../nbs/lib_nbs/02_optimizers.ipynb 5
+# %% ../nbs/lib_nbs/02_optimizers.ipynb 6
 def sgd(x:np.ndarray, # x data of N elements
         y:np.ndarray, # y data of N elements
         pini:dict, # initial parameters of the loss function
