@@ -1,0 +1,50 @@
+website:
+  repo-url: https://github.com/BorjaRequena/Neural-Network-Course
+  repo-subdir: nbs
+  repo-actions: [issue,source]
+  sidebar:
+    style: "docked"
+    collapse-level: 1
+    contents:
+      - section: Course
+        href: course/index.ipynb
+        contents:
+          - section: Linear models
+            contents:
+              - course/linear_regression.ipynb
+              - course/polynomial_fit.ipynb
+              - course/logistic_regression.ipynb
+              - course/perceptron.ipynb
+          - course/probabilistic_view.ipynb
+          - section: Machine learning application overview
+            href: course/applications-index.ipynb
+            contents:
+              - course/applications-cv.ipynb
+              - course/applications-nlp.ipynb
+              - course/applications-tabular.ipynb
+          - section: Neural Networks fundamentals 
+            contents:
+              - course/neural_networks_from_scratch.ipynb                                           
+              - course/automatic_differentiation_pytorch.ipynb
+              - course/multiclass_classification_problem.ipynb
+              - course/regularization_techniques.ipynb             
+          
+          - section: Quantum-Classical Machine Learning
+            contents:
+              - course/QAOA.ipynb                                           
+              - course/VQE.ipynb                                          
+              - course/montecarlo_integration.ipynb
+              - course/rbm.ipynb
+      - section: Homework
+        href: homeworks/index_homework.ipynb
+        contents:
+          - homeworks/01_regression.ipynb
+          - homeworks/02_perceptron.ipynb
+          - homeworks/03_generative.ipynb
+          - homeworks/04_ml_physics.ipynb
+          - homeworks/paper_report.ipynb
+      - section: Library
+        contents:
+          - lib_nbs/00_data_gen.ipynb
+          - lib_nbs/01_losses.ipynb
+          - lib_nbs/02_optimizers.ipynb
