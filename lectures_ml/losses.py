@@ -3,11 +3,11 @@
 # %% auto 0
 __all__ = ['MSE', 'grad_MSE_lr', 'grad_MSE_pr', 'BCE', 'grad_BCE', 'L_per', 'grad_per']
 
-# %% ../nbs/lib_nbs/01_losses.ipynb 3
+# %% ../nbs/lib_nbs/01_losses.ipynb 2
 import numpy as np
 from .data_gen import curve
 
-# %% ../nbs/lib_nbs/01_losses.ipynb 5
+# %% ../nbs/lib_nbs/01_losses.ipynb 4
 def MSE(x:np.ndarray, # x data of N elements
         y:np.ndarray, # y data of N elements
         fun:callable, # function $y=f(x)$
@@ -18,7 +18,7 @@ def MSE(x:np.ndarray, # x data of N elements
     MSE = np.mean((y-yp)**2)
     return MSE
 
-# %% ../nbs/lib_nbs/01_losses.ipynb 7
+# %% ../nbs/lib_nbs/01_losses.ipynb 6
 def grad_MSE_lr(x:np.ndarray, # x data of N elements
                 y:np.ndarray, # y data of N elements
                 params: dict, # Parameters of the function
@@ -29,7 +29,7 @@ def grad_MSE_lr(x:np.ndarray, # x data of N elements
     ga, gb = np.mean(2*x*(yp-y)), np.mean(2*(yp-y))
     return np.array([ga,gb])
 
-# %% ../nbs/lib_nbs/01_losses.ipynb 8
+# %% ../nbs/lib_nbs/01_losses.ipynb 7
 def grad_MSE_pr(x:np.ndarray, # x data of N elements
                 y:np.ndarray, # y data of N elements
                 params: dict, # parameters of the function
@@ -43,7 +43,7 @@ def grad_MSE_pr(x:np.ndarray, # x data of N elements
         g.append(np.mean(ll*x**i))
     return [np.array(g)]
 
-# %% ../nbs/lib_nbs/01_losses.ipynb 9
+# %% ../nbs/lib_nbs/01_losses.ipynb 8
 def BCE(x:np.ndarray, # x data of N elements
         y:np.ndarray, # y data of N elements
         fun:callable, # function $y=f(x)$
@@ -54,7 +54,7 @@ def BCE(x:np.ndarray, # x data of N elements
     l = y*np.log(yp) + (1-y)*np.log(1-yp)
     return -np.mean(l)
 
-# %% ../nbs/lib_nbs/01_losses.ipynb 10
+# %% ../nbs/lib_nbs/01_losses.ipynb 9
 def grad_BCE(x:np.ndarray, # x data of N elements
              y:np.ndarray, # y data of N elements
              params: dict, # Parameters of the function
@@ -67,7 +67,7 @@ def grad_BCE(x:np.ndarray, # x data of N elements
     ga, gb = np.mean((yp-y)*x), np.mean((yp-y))
     return np.array([ga,gb])
 
-# %% ../nbs/lib_nbs/01_losses.ipynb 11
+# %% ../nbs/lib_nbs/01_losses.ipynb 10
 def L_per(x:np.ndarray, # x data of N elements
        y:np.ndarray, # y data of N elements
        fun:callable, # function $y=f(x)$
@@ -79,7 +79,7 @@ def L_per(x:np.ndarray, # x data of N elements
     ll = np.mean(ll*l)
     return ll
 
-# %% ../nbs/lib_nbs/01_losses.ipynb 12
+# %% ../nbs/lib_nbs/01_losses.ipynb 11
 def grad_per(x:np.ndarray, # x data of N elements
              y:np.ndarray, # y data of N elements
              params: dict, # Parameters of the function
