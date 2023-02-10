@@ -31,6 +31,7 @@ website:
               - course/regularization_techniques.ipynb
           - course/montecarlo_integration.ipynb
           - course/rbm.ipynb
+          - course/generative.ipynb
       - section: Homework
         href: homeworks/index_homework.ipynb
         contents:
