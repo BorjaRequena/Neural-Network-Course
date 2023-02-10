@@ -27,14 +27,14 @@ website:
               - course/neural_networks_from_scratch.ipynb                                           
               - course/automatic_differentiation_pytorch.ipynb
               - course/multiclass_classification_problem.ipynb
-              - course/regularization_techniques.ipynb            
+              - course/regularization_techniques.ipynb             
+          
           - section: Quantum-Classical Machine Learning
             contents:
               - course/QAOA.ipynb                                           
               - course/VQE.ipynb                                          
-          - course/montecarlo_integration.ipynb
-          - course/rbm.ipynb
-          - course/generative.ipynb
+              - course/montecarlo_integration.ipynb
+              - course/rbm.ipynb
       - section: Homework
         href: homeworks/index_homework.ipynb
         contents:

@@ -3,10 +3,10 @@
 # %% auto 0
 __all__ = ['line', 'noisy_line', 'curve', 'noisy_curve']
 
-# %% ../nbs/lib_nbs/00_data_gen.ipynb 2
+# %% ../nbs/lib_nbs/00_data_gen.ipynb 3
 import numpy as np
 
-# %% ../nbs/lib_nbs/00_data_gen.ipynb 3
+# %% ../nbs/lib_nbs/00_data_gen.ipynb 4
 def line(x:np.ndarray,
          a=1.0,#Slope
          b=0.5,#Intercept
@@ -17,7 +17,7 @@ def line(x:np.ndarray,
     '''Create a dataset of nsamples in the interval following the linear regression $y=a x+b$.'''
     return a*x+b
 
-# %% ../nbs/lib_nbs/00_data_gen.ipynb 4
+# %% ../nbs/lib_nbs/00_data_gen.ipynb 5
 def noisy_line(a=1.0,#Slope
                b=0.5,#Intercept
                interval=[-10.,10.],#Interval for x.
@@ -38,7 +38,7 @@ def noisy_line(a=1.0,#Slope
     vnoise = np.random.normal(loc=mu, scale=sigma, size=nsamples)
     return x, a*x+b+vnoise
 
-# %% ../nbs/lib_nbs/00_data_gen.ipynb 5
+# %% ../nbs/lib_nbs/00_data_gen.ipynb 6
 def curve(x, # dataset to be imputed
           coeffs, # array of the weights of the polynomial of degree d-1, where d is the size of the array.
          )->np.ndarray: #the vector $y=w \cdot x$
@@ -50,7 +50,7 @@ def curve(x, # dataset to be imputed
         y = y+ coeffs[i]* x**ex[i]
     return y
 
-# %% ../nbs/lib_nbs/00_data_gen.ipynb 6
+# %% ../nbs/lib_nbs/00_data_gen.ipynb 7
 def noisy_curve(coeffs, # array of the weights of the polynomial of degree d-1, where d is the size of the array.
                 x= None, # dataset to be imputed. if x is `None`, then the dataset is constructed with nsamples from a uniform distribution
                 interval=[-2,2], # interval for the sampling of x
