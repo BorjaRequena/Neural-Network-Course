@@ -11,30 +11,30 @@ website:
         contents:
           - section: Linear models
             contents:
-              - course/linear_regression.ipynb
-              - course/polynomial_fit.ipynb
-              - course/logistic_regression.ipynb
-              - course/perceptron.ipynb
+              - course/linear_models/linear_regression.ipynb
+              - course/linear_models/polynomial_fit.ipynb
+              - course/linear_models/logistic_regression.ipynb
+              - course/linear_models/perceptron.ipynb
           - course/probabilistic_view.ipynb
           - section: Machine learning application overview
-            href: course/applications-index.ipynb
+            href: course/applications/applications-index.ipynb
             contents:
-              - course/applications-cv.ipynb
-              - course/applications-nlp.ipynb
-              - course/applications-tabular.ipynb
-          - section: Neural Networks fundamentals 
+              - course/applications/applications-cv.ipynb
+              - course/applications/applications-nlp.ipynb
+              - course/applications/applications-tabular.ipynb
+          - section: Fundamentals of deep learning 
             contents:
-              - course/neural_networks_from_scratch.ipynb                                           
-              - course/automatic_differentiation_pytorch.ipynb
-              - course/multiclass_classification_problem.ipynb
-              - course/regularization_techniques.ipynb            
-          - section: Quantum-Classical Machine Learning
-            contents:
-              - course/QAOA.ipynb                                           
-              - course/VQE.ipynb                                          
+              - course/deep_learning/neural_networks_from_scratch.ipynb                                           
+              - course/deep_learning/automatic_differentiation_pytorch.ipynb
+              - course/deep_learning/multiclass_classification_problem.ipynb
+              - course/deep_learning/regularization_techniques.ipynb                                            
           - course/montecarlo_integration.ipynb
           - course/rbm.ipynb
           - course/generative.ipynb
+          - section: Automatic differentiation for quantum computing
+            contents:
+              - course/quantum/QAOA.ipynb                                           
+              - course/quantum/VQE.ipynb    
       - section: Homework
         href: homeworks/index_homework.ipynb
         contents:
