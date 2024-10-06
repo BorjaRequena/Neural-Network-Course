@@ -38,24 +38,7 @@ Some of the content has been adapted from our book in machine learning
 for the quantum sciences, as well as other material such as our PhD
 theses (Dawid et al. 2022).
 
-## Syllabus
-
-| Date | Lecture | Lecturer |
-|----|----|----|
-| 13/12 | Introduction + Linear models | Alexandre Dauphin |
-| 15/12 | Linear models | Alexandre Dauphin |
-| 20/12 | Linear models + Introduction to neural networks | Alexandre Dauphin |
-| 22/12 | Probabilistic view on Machine Learning | Alexandre Dauphin |
-| 10/02 | Practical introduction to Neural Networks | Borja Requena |
-| 12/01 | Neural Network fundamentals: Implementation from scratch | Marcin Płodzień |
-| 17/01 | Neural Network fundamentals: Automatic differentiation | Marcin Płodzień |
-| 19/01 | Neural Network fundamentals: Convolutional neural networks and regularization techniques | Marcin Płodzień |
-| 24/01 | Introduction to classical Monte Carlo and sampling | Paolo Stornati |
-| 26/01 | Restricted Boltzman machines | Paolo Stornati |
-| 31/01 | Generative models | Borja Requena |
-| 02/02 | Overiew of the state of the art and Applications in Physics | Borja Requena |
-
-## Original instructors
+## Original instructors and main contributors
 
 <div>
 
