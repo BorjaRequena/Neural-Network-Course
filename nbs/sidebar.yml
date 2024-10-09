@@ -9,6 +9,7 @@ website:
       - section: Course
         href: course/index.ipynb
         contents:
+          - course/introduction.ipynb
           - section: Linear models
             contents:
               - course/linear_models/linear_regression.ipynb
