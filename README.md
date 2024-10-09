@@ -35,8 +35,8 @@ with python. We make extensive use of specific librairies such as numpy,
 PyTorch and fastai.
 
 Some of the content has been adapted from our book in machine learning
-for the quantum sciences, as well as other material such as our PhD
-theses (Dawid et al. 2022).
+for the quantum sciences (Dawid et al. 2022), as well as other material
+such as our PhD theses.
 
 ## Original instructors and main contributors
 
