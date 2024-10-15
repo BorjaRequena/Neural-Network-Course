@@ -25,7 +25,8 @@ website:
               - course/applications/applications-tabular.ipynb
           - section: Fundamentals of deep learning 
             contents:
-              - course/deep_learning/neural_networks_from_scratch.ipynb                                           
+              - course/deep_learning/neural_networks_from_scratch.ipynb
+              - course/deep_learning/pytorch_intro.ipynb                                         
               - course/deep_learning/automatic_differentiation_pytorch.ipynb
               - course/deep_learning/multiclass_classification_problem.ipynb
               - course/deep_learning/regularization_techniques.ipynb                                            
