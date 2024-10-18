@@ -32,7 +32,10 @@ website:
               - course/deep_learning/regularization_techniques.ipynb                                            
           - course/montecarlo_integration.ipynb
           - course/rbm.ipynb
-          - course/generative.ipynb
+          - section: Generative models
+            contents:
+              - course/generative/introduction.ipynb
+              - course/generative/language_models.ipynb
           - section: Automatic differentiation for quantum computing
             contents:
               - course/quantum/QAOA.ipynb                                           
