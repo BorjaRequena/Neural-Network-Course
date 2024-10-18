@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Paolo Stornati">
+<meta name="description" content="In this section, we explain how to learn probability distributions with restricted Boltzmann machines.">
+
+<title>Restricted Boltzmann Machines – lectures_ml</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="Restricted Boltzmann Machines – lectures_ml">
+<meta property="og:description" content="In this section, we explain how to learn probability distributions with restricted Boltzmann machines.">
+<meta property="og:site_name" content="lectures_ml">
+<meta name="twitter:title" content="Restricted Boltzmann Machines – lectures_ml">
+<meta name="twitter:description" content="In this section, we explain how to learn probability distributions with restricted Boltzmann machines.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">lectures_ml</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/Neural-Network-Course"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../course/rbm.html">Restricted Boltzmann Machines</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction to Machine Learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linear models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_models/linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linear regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_models/polynomial_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Polynomial fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_models/logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_models/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Perceptron</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/probabilistic_view.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A probabilistic view on machine learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../course/applications/applications-index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Machine learning application overview</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications/applications-cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in computer vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications/applications-nlp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in natural language processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications/applications-tabular.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks with structured data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Fundamentals of deep learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/neural_networks_from_scratch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/pytorch_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks with PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/automatic_differentiation_pytorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automatic differentiation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/multiclass_classification_problem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiclass classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/regularization_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural Networks regularization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/montecarlo_integration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo Integration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/rbm.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Restricted Boltzmann Machines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Generative models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/generative/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/generative/language_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Language models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Automatic differentiation for quantum computing</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/quantum/qaoa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quantum Approximate Optimization Algorithm (QAOA) from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/quantum/vqe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Variational Quantum Eigensolver (VQE) from scratch</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homeworks/index_homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Homework</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1 - Regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2 - Perceptron</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/generative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3 - Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/ml_physics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4 - ML techniques in physics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/paper_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Paper report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Library</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/data_gen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Generation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/losses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Loss functions and gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/optimizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimizers</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#boltzmann-machine" id="toc-boltzmann-machine" class="nav-link active" data-scroll-target="#boltzmann-machine"><span class="header-section-number">1</span> Boltzmann Machine</a></li>
+  <li><a href="#restricted-boltzmann-machine" id="toc-restricted-boltzmann-machine" class="nav-link" data-scroll-target="#restricted-boltzmann-machine"><span class="header-section-number">2</span> Restricted Boltzmann Machine</a>
+  <ul class="collapse">
+  <li><a href="#unsupervised-learning" id="toc-unsupervised-learning" class="nav-link" data-scroll-target="#unsupervised-learning"><span class="header-section-number">2.1</span> Unsupervised learning</a></li>
+  <li><a href="#gibbs-sampling" id="toc-gibbs-sampling" class="nav-link" data-scroll-target="#gibbs-sampling"><span class="header-section-number">2.2</span> Gibbs Sampling</a></li>
+  </ul></li>
+  <li><a href="#learning-the-ising-model" id="toc-learning-the-ising-model" class="nav-link" data-scroll-target="#learning-the-ising-model"><span class="header-section-number">3</span> Learning the Ising model</a>
+  <ul class="collapse">
+  <li><a href="#building-a-dataset" id="toc-building-a-dataset" class="nav-link" data-scroll-target="#building-a-dataset"><span class="header-section-number">3.1</span> Building a dataset</a></li>
+  <li><a href="#rbm-parameters" id="toc-rbm-parameters" class="nav-link" data-scroll-target="#rbm-parameters"><span class="header-section-number">3.2</span> RBM parameters</a></li>
+  <li><a href="#probability-distribution-of-the-rbm" id="toc-probability-distribution-of-the-rbm" class="nav-link" data-scroll-target="#probability-distribution-of-the-rbm"><span class="header-section-number">3.3</span> Probability distribution of the RBM</a></li>
+  <li><a href="#training-with-stochastic-gradient-descent" id="toc-training-with-stochastic-gradient-descent" class="nav-link" data-scroll-target="#training-with-stochastic-gradient-descent"><span class="header-section-number">3.4</span> Training with Stochastic Gradient Descent</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/rbm.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../course/rbm.html">Restricted Boltzmann Machines</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Restricted Boltzmann Machines</h1>
+</div>
+
+<div>
+  <div class="description">
+    In this section, we explain how to learn probability distributions with restricted Boltzmann machines.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Paolo Stornati </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>Modern artificial intelligence relies on the representational power and computational capabilities of networks of interconnected elementary processing units (neurons). This concept came to light during the 1950s, where a collective effort, widespread over many different disciplines, took on the daunting mystery of the nature of human intelligence and the mechanisms behind cognition and reasoning. The first proposal of artificial neurons, followed by learning theories, gave rise to the beginning of modern cognitive science, and the birth of artificial neural networks. Much interest in the subject was sparked also by the possibilities offered by the first computing machines. This new technology raised the question whether such computing devices, equipped with powerful algorithms and enough computational power, could show intelligent behaviour.</p>
+<section id="boltzmann-machine" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Boltzmann Machine</h1>
+<p>A Boltzmann machine, like a Sherrington–Kirkpatrick model, is a so-called <em>energy-based model</em>. It is a neural network with an associated total “energy” (Hamiltonian) defined for the overall state of its neurons or units, which are binary. The Boltzmann machine weights are stochastic and its global energy is identical in form to that of Hopfield networks and Ising models:</p>
+<p><span class="math display">\[ E = -\sum_{i,j}W_{i,j}x_i x_j+\sum_k b_k x_k\]</span> where: <span class="math inline">\(W_{ij}\)</span> is the connection strength between unit <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, <span class="math inline">\(x_{i} \in [0,1]\)</span> is the state of the <span class="math inline">\(i\)</span>-th unit, and <span class="math inline">\(b_{i}\)</span> is its corresponding bias.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rbm_files/figure-html/cell-2-1-image.png" class="img-fluid figure-img"></p>
+<figcaption>image.png</figcaption>
+</figure>
+</div>
+<p>The training of this model corresponds to finding the global minimum of the energy. This means that the system must be able to escape local energy minima, which can be achieved by occasionally allowing jumps to higher energy states. A natural way to create these jumps is to place the system at thermal equilibrium at inverse temperature $= 1/T $. The thermal fluctuations modify the elementary computation of each neuron from deterministic to stochastic. In the Boltzmann machine, a neuron <span class="math inline">\(i\)</span> updates to the state <span class="math inline">\(x_i = 1\)</span> with probability: <span class="math display">\[ p_i=\frac{1}{1+e^{-\beta \Delta E_i}}\,, \]</span> where the energy gap is <span class="math inline">\(\Delta E_i = \sum_j W_{i,j}x_j + b_i\)</span> .</p>
+<p>At zero temperature (<span class="math inline">\(\beta \to \infty\)</span>) we recover the Hopfield model minimizing energy. At any finite temperature, the dynamics of the stochastic neurons minimize free energy <span class="math inline">\(F = U − T S\)</span>, where <span class="math inline">\(U = \left\langle E \right\rangle\)</span> is the internal energy and <span class="math inline">\(S\)</span> is the entropy. This means that higher energy states can be reached with a probability that increases with the temperature. If we let the system update with the above rule, the network will reach the following equilibrium Boltzmann distribution:</p>
+<p><span class="math display">\[ p(x)\propto e^{-\beta E(x)} \]</span></p>
+<p>One effective strategy to exploit the thermal fluctuations to find the global minimum of E(x)is to start at high temperature and gradually decreasing it with a controlled schedule. This technique is called <strong>simulated annealing</strong> and can succeed to discover, at sufficiently low temperature, a final state corresponding to a “good” solution of the optimization problem.</p>
+</section>
+<section id="restricted-boltzmann-machine" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Restricted Boltzmann Machine</h1>
+<p>A restricted Boltzmann machine (RBM) is a stochastic neural network with two differentiated sets of units: visible and hidden. The connectivity in the RBM is restricted and only interactions between different types of units are allowed, i.e., there are no visible-visible or hidden-hidden connections. Thus, we usually refer to the RBM as having two fully connected layers: a visible layer <span class="math inline">\(v = (v_1, \dots , v_{N_v})\)</span> and a hidden layer <span class="math inline">\(h = (h_1,\dots,h_{N_h})\)</span> with symmetric interaction <span class="math inline">\(W\)</span>. The biases are defined as two vectors <span class="math inline">\(b\)</span> and <span class="math inline">\(c\)</span> for the visible and hidden units respectively. The energy function is:</p>
+<p><span class="math display">\[E_\lambda(h,v)=-\sum_{i,j}^{N_v,N_h}W_{i,j}h_iv_j-\sum_{i}^{N_v}b_iv_i-\sum_{i}^{N_h}c_ih_i\]</span></p>
+<p>Where <span class="math inline">\(\lambda=(W,b,c)\)</span> is the set of free parameters of the model. The probability distribution of the network is given by the Boltzmann distribution: <span class="math display">\[p_\lambda(h,v)=\frac{e^{-E_\lambda(h,v)}}{Z_\lambda}\]</span> and the partition function is defined as: <span class="math display">\[Z_\lambda=\sum_{h,v}e^{-E_\lambda(h,v)}\]</span></p>
+<p>We are interested in using the RBM for generative modeling. Thus, the “output” of the network is given in terms of the probability distribution that the RBM associates with the input space, i.e., the visible layer. The visible distribution is obtained simply by tracing out the hidden degrees of freedom: <span class="math display">\[p_\lambda(v)=Tr_h\left[p_\lambda(h,v) \right] \]</span> Due to the bipartite structure of the network, the probability density factorizes and the summation can be evaluated exactly: <span class="math display">\[p_\lambda(v)=\frac{e^{-\epsilon_\lambda(v)}}{Z_\lambda}\]</span> where we have defined: <span class="math display">\[\epsilon_\lambda(v)=-\sum_{i}^{N_h}log\left(1+e^{\sum_jW_{i,j}v_j+c_i}\right)-\sum_{i}^{N_v}b_iv_i\]</span> often called free energy in the machine learning community. However, we will refer to <span class="math inline">\(\epsilon_\lambda(v)\)</span> as effective visible energy (or effective energy), not to be confused with the free energy of the neural network <span class="math inline">\(F = − log \left(Z_\lambda \right)\)</span>.</p>
+<p>An important property of the RBM, compared to a regular Boltzmann machines, is the conditional independence of the units within the same layer. This means that the state of a hidden unit hi, only depends on the current state of the visible layer v (and vice versa). The two conditional distributions <span class="math inline">\(p_\lambda(v|h)\)</span> and <span class="math inline">\(p_\lambda(h | v)\)</span>, factorize over each single unit: <span class="math display">\[\begin{align}
+p_\lambda(v|h) &amp;= \prod_j p_\lambda(v_j|h)\\
+p_\lambda(h|v) &amp;= \prod_i p_\lambda(h_i|v)
+\end{align}\]</span> And every probability in the product can be obtained independently. For instance, the probability for a visible unit <span class="math inline">\(j\)</span> to be active, given a hidden layer in the state <span class="math inline">\(h\)</span> is: <span class="math display">\[p_\lambda(v_j=1|h)= \frac{1}{1+e^{-\Delta_{v_j}}}\,,\]</span> where <span class="math inline">\(\Delta_{v_j}=\sum_i W_{i,j}h_i+b_j\)</span>. Analogously, the conditional probability of activating the hidden unit <span class="math inline">\(i\)</span> given the state <span class="math inline">\(v\)</span> is: <span class="math display">\[p_\lambda(h_i=1|v)= \frac{1}{1+e^{-\Delta_{h_i}}}\,,\]</span> where <span class="math inline">\(\Delta_{h_i}=\sum_j W_{i,j}v_j+c_i\)</span>.</p>
+<section id="unsupervised-learning" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="unsupervised-learning"><span class="header-section-number">2.1</span> Unsupervised learning</h2>
+<p>Generative modeling consists of learning the constraints underlying a probability distribution defined over the input space. This way, the neural network can generate input patterns by itself according to the correct (unknown) probability distribution, which we call <span class="math inline">\(q(v)\)</span>. The learning occurs by changing the internal parameters to find an optimal set <span class="math inline">\(\lambda^*\)</span>, such that the probability distribution defined by the RBM mimics the target distribution, <span class="math inline">\(p_{\lambda^*}\sim q\)</span>.</p>
+<p>The learning mechanism is formulated, as usual, with an optimization problem through of a cost function <span class="math inline">\(C_{\lambda}\)</span>. For the case of generative modeling, the ultimate goal is to reduce the “distance” between the input distribution <span class="math inline">\(q(v)\)</span> and the RBM distribution <span class="math inline">\(p_\lambda(v)\)</span>. We adopt the standard choice of Kullbach-Leibler (KL) divergence (or relative entropy), defined as: <span class="math display">\[C_\lambda^q=KL(q||p_{\lambda})=\sum_v q(v)\log \frac{q(v)}{p_{\lambda}(v)}\,.\]</span> Notice that the term <span class="math inline">\(q(v)\log q(v)\)</span> does not depend on our model. Thus, we use the average negative log-likelihood: <span class="math display">\[ \left\langle \mathcal{L}_{\lambda} \right\rangle_q=-\sum_vq(v)log(p_{\lambda}(v))\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The KL divergence is not a proper distance measure, since it is non-symmetric (<span class="math inline">\(KL(q||p)\neq KL(p||q)\)</span> in general) and it does not satisfy the triangle inequality. Nevertheless, the KL divergence is zero if and only if the two probability distribution are equal almost everywhere. Thus, we can safely use it to quantify the distnace between distributions.</p>
+</div>
+</div>
+<p>We proceed now to calculate the gradient of the cost function with respect to all network parameters <span class="math inline">\(\lambda\)</span>. The unknown distribution q(v) is, in practice, encoded implicitly into a training dataset <span class="math inline">\(D = \{v1,v2,...\}\)</span> containing <span class="math inline">\(|D|\)</span> independent configurations <span class="math inline">\(v_k\)</span>, identically distributed according to <span class="math inline">\(q(v)\)</span>. The unknown distribution <span class="math inline">\(q(v)\)</span> is approximated by the <em>empirical distribution</em>: <span class="math display">\[ q(v')=\frac {1}{|D|} \sum_{v_k\in D }\delta (v'-v_k)\]</span> which results into the approximate divergence: <span class="math display">\[C_\lambda^q \simeq \left\langle \mathcal{L}_{\lambda} \right\rangle_D + \sum_vq'(v)log(q'(v))\,.\]</span></p>
+<p>As we mention above, the second term of the equation is constant and does not need to be learned. It is also called the entropy of the distribution <span class="math inline">\(q'\)</span>. The only relevant term for the optimization is the negative log-likelihood: <span class="math display">\[ \left\langle \mathcal{L}_{\lambda} \right\rangle_D=  \frac {1}{|D|} \sum_{v'}\sum_{v_k\in D } \delta (v'-v_k) log(p_{\lambda}(v'))= \frac {1}{|D|} \sum_{v_k\in D}\epsilon_\lambda(v_k)+log(Z_\lambda)\]</span> To perform an optimization of this cost function, we need to compute the gradient of the negative log likelihood: <span class="math display">\[\nabla_\lambda  \left\langle \mathcal{L}_{\lambda} \right\rangle_D=\nabla_\lambda  \frac {1}{|D|} \sum_{v_k\in D}\epsilon_\lambda(v_k)+ \nabla_\lambda log(Z_\lambda)\,,\]</span> which can be rewritten as: <span class="math display">\[\nabla_\lambda  \left\langle \mathcal{L}_{\lambda} \right\rangle_D= \left\langle \nabla_\lambda  \epsilon_{\lambda}(v) \right\rangle_{v\sim D} - \left\langle \nabla_\lambda  \epsilon_{\lambda}(v) \right\rangle_{v\sim p_\lambda}\]</span></p>
+<p>The gradients of the effective visible energy have the simple form: <span class="math display">\[ \frac{\partial}{\partial W_{i,j}}\epsilon_{\lambda}(v)=-\frac{1}{1+e^{-\Delta_{h_i}}}v_j\]</span> <span class="math display">\[ \frac{\partial}{\partial b_{j}}\epsilon_{\lambda}(v)=-v_j\]</span> <span class="math display">\[ \frac{\partial}{\partial c_{i}}\epsilon_{\lambda}(v)=-\frac{1}{1+e^{-\Delta_{h_i}}}\]</span> where we recall the definition: <span class="math display">\[\Delta_{h_i}=\sum_j W_{i,j}v_j+c_i\]</span></p>
+<p>In the positive phase driven by the data <span class="math inline">\(\left\langle \nabla_\lambda  \epsilon_{\lambda}(v) \right\rangle_{v\sim D}\)</span>, the energy is lowered for input data configurations (thus increasing their probabilities). During the negative phase <span class="math inline">\(-\left\langle \nabla_\lambda  \epsilon_{\lambda}(v) \right\rangle_{v\sim p_\lambda}\)</span>, the learning occurs in reverse, with the signal generated by the RBM equilibrium distribution: <span class="math display">\[ \left\langle \nabla_\lambda  \epsilon_{\lambda}(v) \right\rangle_{v\sim p_\lambda}= \sum_v p_\lambda(v) \epsilon_{\lambda}(v)\,.\]</span></p>
+<p>Since the evaluation of the negative phase requires a summation over an exponential number of states <span class="math inline">\(v\)</span>, we calculate this term using Monte Carlo (MC) sampling of the RBM as: <span class="math display">\[ \left\langle \nabla_\lambda  \epsilon_{\lambda}(v) \right\rangle_{v\sim p_\lambda} \sim \frac 1 M \sum_{l=1}^M  \epsilon_{\lambda}(v_l) \]</span> The effective energy gradient is averaged over <span class="math inline">\(M\)</span> configurations <span class="math inline">\(v_l\)</span> sampled from the RBM.</p>
+</section>
+<section id="gibbs-sampling" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="gibbs-sampling"><span class="header-section-number">2.2</span> Gibbs Sampling</h2>
+<p>Given the restricted conditional independence of the RBM graph, an MC sampling technique called <strong>Gibbs sampling</strong> (a.k.a. heat bath or Glauber dynamics) allows us to obtain a fast evaluation of the negative phase of the loss.</p>
+<p>The general philosophy behind MC sampling is to simulate the evolution of the system (in our case the visible layer) state by state, and compute the expectation value of some observables (such as the effective energy gradient) as an average in Markov time. Contrary to full enumeration, where each state <span class="math inline">\(v\)</span> is weighted in the sum, we build a sequence of <span class="math inline">\(M ≪ 2^N\)</span> states in such a way that each state v appears with a probability <span class="math inline">\(p_\lambda(v)\)</span> (also called importance sampling).</p>
+<p>In Gibbs sampling, we update each variable sequentially, conditioned on the values of all the other variables. For the case of the RBM, this corresponds to samping each visible unit <span class="math inline">\(v_j\)</span> from the conditional distribution <span class="math inline">\(p_\lambda(v_j | h,v_{/j})\)</span> (this reads the probability of <span class="math inline">\(v_j=1\)</span> given <span class="math inline">\(h\)</span> and all elements of <span class="math inline">\(v\)</span> except <span class="math inline">\(v_j\)</span>), and each hidden unit <span class="math inline">\(h_i\)</span> from the conditional distribution <span class="math inline">\(p_\lambda(h_j | v,h_{/j})\)</span>.</p>
+<p>However, the RBM structure has the special property that each unit is conditionally independent from the others of the same layer. Thus, we can instead sample all the units in one layer simultaneously (Block Gibbs sampling)! Given an initial state <span class="math inline">\(v\)</span>, the selection probability to sample a new state <span class="math inline">\(v′\)</span> is given by the two RBM layer-wise conditional distributions <span class="math inline">\(g(v\to v′)=p_\lambda(v′ |h)p_\lambda(h|v)\)</span> corresponding to the transitions <span class="math inline">\(v \to h\)</span> and <span class="math inline">\(h \to v′\)</span>. Given this expression, we can easily verify that <span class="math inline">\(g(v \to v′)\)</span> satisfies detailed balance condition. Furthermore, once a new state has been chosen according to the selection probability, the move is always accepted with unit probability.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rbm_files/figure-html/cell-6-1-168c0ef0-faf8-4d32-ba3c-400cb2d28fea.png" class="img-fluid figure-img"></p>
+<figcaption>image.png</figcaption>
+</figure>
+</div>
+<p>To summarize: given an initial state <span class="math inline">\(v(0)\)</span>, a new state <span class="math inline">\(v(1)\)</span> is sampled from the distribution <span class="math inline">\(p_\lambda(v)\)</span> in two steps:</p>
+<ol type="1">
+<li>Sample a hidden state from the conditional distribution <span class="math inline">\(p_\lambda(h(0)|v(0))\)</span></li>
+<li>Sample a visible state from <span class="math inline">\(p_\lambda(v(1) | h(0))\)</span>.</li>
+</ol>
+<p>Because of the bipartite structure of the RBM graph, each variable in a layer can be independently sampled simultaneously, leading to layer-wise block sampling. We can repeat this process as many times as we want to build a Markov chain.</p>
+<div id="cell-8" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gibbs_sampling(k, v_0, W, v_bias, h_bias):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    v_k <span class="op">=</span> np.zeros_like(v_0)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    h_0 <span class="op">=</span> np.zeros_like(h_bias)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    h_k <span class="op">=</span> np.zeros_like(h_bias)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    h_0 <span class="op">=</span> gibbs_vtoh(W, v_0, h_bias)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    v_k <span class="op">=</span> gibbs_htov(W, h_0, v_bias)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(k):</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        h_k <span class="op">=</span> gibbs_vtoh(W, v_k, h_bias)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        v_k <span class="op">=</span> gibbs_htov(W, h_k, v_bias)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> v_k, h_0, h_k</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gibbs_vtoh(W, v, h_bias):</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    activation<span class="op">=</span>np.zeros_like(h_bias)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(activation.shape[<span class="dv">0</span>]):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(activation.shape[<span class="dv">1</span>]):</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            activation[i,j] <span class="op">=</span> sigmoid(h_bias[i,j] <span class="op">+</span> np.<span class="bu">sum</span>(v<span class="op">*</span>W[:,:,i,j]))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    h_k <span class="op">=</span> np.random.binomial(<span class="dv">1</span>,activation,size<span class="op">=</span>activation.shape)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> h_k</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gibbs_htov(W, h, v_bias):</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    activation<span class="op">=</span>np.zeros_like(v_bias)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(activation.shape[<span class="dv">0</span>]):</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(activation.shape[<span class="dv">1</span>]):</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>            activation[i,j] <span class="op">=</span> sigmoid(v_bias[i,j] <span class="op">+</span> np.<span class="bu">sum</span>(h<span class="op">*</span>W[i,j,:,:]))</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    v_k <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, activation, size<span class="op">=</span>activation.shape)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> v_k</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="learning-the-ising-model" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Learning the Ising model</h1>
+<p>Let’s see an example of training an RBM to learn the probability distribution of the Ising model in two dimensions, described by the Hamiltonian <span class="math display">\[ H = \sum_{&lt;i,j&gt;}\sigma_i \sigma_j\,,\]</span> where <span class="math inline">\(&lt;i,j&gt;\)</span> denotes nearest neighbors on the lattice. For this example, we will consider a small square lattice of <span class="math inline">\(2\times 3\)</span> spins, which effectively condition the dimension of the visible layer in our RBM, a temperature <span class="math inline">\(T=1\)</span>.</p>
+<div id="cell-10" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>rows, columns <span class="op">=</span> <span class="dv">2</span>, <span class="dv">3</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="fl">1.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="building-a-dataset" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="building-a-dataset"><span class="header-section-number">3.1</span> Building a dataset</h2>
+<p>Before we dive into our model, we need a suitable dataset to train it. We will sample 100000 spin configurations with the <a href="https://borjarequena.github.io/Neural-Network-Course/course/montecarlo_integration.html#metropolis-hasting-algorithm">Metropolis-Hastings algorithm</a> to build our dataset.</p>
+<div id="cell-12" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> H(spin):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    n_r, n_c  <span class="op">=</span> spin.shape <span class="co"># used for for loops</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    spin <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> spin <span class="op">-</span> <span class="dv">1</span> <span class="co"># maps {0,1} to {-1,1}</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> <span class="fl">0.</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_r):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n_c):</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> j<span class="op">+</span><span class="dv">1</span> <span class="op">!=</span> n_c: <span class="co">#if next index is not out of bounds</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                H <span class="op">+=</span> spin[i,j]<span class="op">*</span>spin[i,j<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> i<span class="op">+</span><span class="dv">1</span> <span class="op">!=</span> n_r:</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                H <span class="op">+=</span> spin[i,j]<span class="op">*</span>spin[i<span class="op">+</span><span class="dv">1</span>,j]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>H</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Met_Hast(n_v_r,n_v_c, T, num_iterations):</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="co">#Random spin configuration</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        spin <span class="op">=</span> <span class="dv">2</span><span class="op">*</span> np.random.randint(<span class="dv">2</span>,size <span class="op">=</span> (n_v_r,n_v_c)) <span class="op">-</span> <span class="dv">1</span> <span class="co">#{0,1} --&gt; {-1,1}</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        E <span class="op">=</span> H(spin) <span class="co"># calculate initial energy</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        data_set <span class="op">=</span> np.zeros((num_iterations, n_v_r,n_v_c),dtype<span class="op">=</span><span class="bu">int</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_iterations):</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            <span class="co">#Choose random coordinate on 2d lattice to flip</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> np.random.randint(n_v_r)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> np.random.randint(n_v_c)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            spin[x,y] <span class="op">*=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            <span class="co">#Calculate energy change due to flipped spin</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>            E_neighbors <span class="op">=</span> <span class="fl">0.</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> x <span class="op">!=</span> <span class="dv">0</span>:         <span class="co"># if there is a site to the left</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>                E_neighbors <span class="op">+=</span> spin[x<span class="op">-</span><span class="dv">1</span>,y]</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> x <span class="op">!=</span> (n_v_r<span class="op">-</span><span class="dv">1</span>): <span class="co"># if there is a site to the right</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>                E_neighbors <span class="op">+=</span> spin[x<span class="op">+</span><span class="dv">1</span>,y]</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> y <span class="op">!=</span> <span class="dv">0</span>:         <span class="co"># if there is a site below</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>                E_neighbors <span class="op">+=</span> spin[x,y<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> y <span class="op">!=</span> (n_v_c<span class="op">-</span><span class="dv">1</span>): <span class="co"># if there is a site above</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>                E_neighbors <span class="op">+=</span> spin[x,y<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>            dE <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">*</span> spin[x,y] <span class="op">*</span> E_neighbors</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>            <span class="co">#Accept or reject the flipped site</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> np.random.random() <span class="op">&lt;</span> np.exp(<span class="op">-</span>dE<span class="op">/</span>T):</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>                E <span class="op">+=</span> dE</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>                spin[x,y] <span class="op">*=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>            <span class="co">#Add spin configuration to data set</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>            np.copyto(data_set[i,:,:], spin)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (data_set<span class="op">+</span><span class="dv">1</span>)<span class="op">/</span><span class="dv">2</span> <span class="co">#{-1,1} --&gt; {0,1}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With this algorithm, we choose one spin site on the lattice and flip it. The flip is automatically accepted if the energy of the system decreases. However, it can also be accepted with some probability if the energy of the system increases. This probability follows a Boltzmann distribution that depends on the temperature, as we saw in the previous part of the course.</p>
+<p>Let’s sample the configurations and shuffling the data to eliminate any possible correlation between samples.</p>
+<div id="cell-14" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data_set_size <span class="op">=</span> <span class="dv">100000</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data_set <span class="op">=</span> Met_Hast(n_v_r, n_v_c, T, data_set_size)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>np.random.shuffle(data_set)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="rbm-parameters" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="rbm-parameters"><span class="header-section-number">3.2</span> RBM parameters</h2>
+<p>Now let’s initialize the parameters of our RBM. The dimension of the visible layer must match the size of our physical system. Therefore, we have <span class="math inline">\(N_v=2\times3=6\)</span> visible neurons. However, the size of the hidden layer is completely free. In this case, we will take <span class="math inline">\(N_h=16\)</span> hidden units.</p>
+<div id="cell-16" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visible layer structure</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>n_v_r <span class="op">=</span> rows</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>n_v_c <span class="op">=</span> columns</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>N_v <span class="op">=</span> n_v_r <span class="op">*</span> n_v_c <span class="co"># Total number of visible neurons</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Hidden Layer structure</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>n_h_r <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>n_h_c <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>N_h <span class="op">=</span> n_h_r <span class="op">*</span> n_h_c</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Having set the sizes, we can initialize the actual parameters. The size of our weight matrix depends entirely on the number of visible and hidden neurons.</p>
+<div id="cell-18" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Array Initialization</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> np.sqrt(<span class="fl">1.</span><span class="op">/</span>(N_v <span class="op">+</span> N_h)) </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>W <span class="op">=</span> np.random.uniform(low<span class="op">=-</span>width<span class="op">/</span><span class="fl">2.</span>, high<span class="op">=</span>width<span class="op">/</span><span class="fl">2.</span>, size<span class="op">=</span>(N_v<span class="op">*</span>N_h)).reshape((n_v_r, n_v_c, n_h_r, n_h_c))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>v_bias <span class="op">=</span> np.ones(N_v).reshape(n_v_r, n_v_c)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>h_bias <span class="op">=</span> np.ones(N_h).reshape(n_h_r, n_h_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="probability-distribution-of-the-rbm" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="probability-distribution-of-the-rbm"><span class="header-section-number">3.3</span> Probability distribution of the RBM</h2>
+<p>A probability distribution can be represented by the parameter values of the Restricted Boltzmann Machine based on the formula <span class="math display">\[ p(\sigma) = \frac{1}{Z}e^{\varepsilon} \]</span> where <span class="math inline">\(\varepsilon\)</span> is defined as <span class="math display">\[ \varepsilon = \sum_{j}b_j \sigma_j + \sum_{i} log(1+e^{c_i + \sum_j W_{ij} \sigma_j})\]</span></p>
+<ul>
+<li><span class="math inline">\(\sigma_j\)</span>: jth visible node</li>
+<li><span class="math inline">\(b_j\)</span>: bias of jth visible node</li>
+<li><span class="math inline">\(c_i\)</span>: bias of ith hidden node</li>
+<li><span class="math inline">\(W_{ij}\)</span>: weight between ith hidden node and jth visible node</li>
+<li><span class="math inline">\(Z\)</span>: Partition Function</li>
+</ul>
+<div id="cell-20" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> p_model(W, v_bias, h_bias, v_set):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    n_spin <span class="op">=</span> <span class="bu">len</span>(v_set[<span class="dv">0</span>,<span class="dv">0</span>,:])</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    n_v_r,n_v_c <span class="op">=</span> v_bias.shape</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    n_h_r,n_h_c <span class="op">=</span> h_bias.shape</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    p_model <span class="op">=</span> np.zeros(n_spin)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> spin <span class="kw">in</span> <span class="bu">range</span>(n_spin):</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        c_ <span class="op">=</span> <span class="fl">0.</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        a_ <span class="op">=</span> np.<span class="bu">sum</span>(v_bias<span class="op">*</span>v_set[:,:,spin])</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_h_r):</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n_h_c):</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                b_ <span class="op">=</span> np.<span class="bu">sum</span>(np.multiply(W[:,:,i,j], v_set[:,:,spin]))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                c_ <span class="op">+=</span> np.log(<span class="dv">1</span> <span class="op">+</span> np.exp(h_bias[i,j] <span class="op">+</span> b_))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        p_model[spin] <span class="op">=</span> np.exp(a_ <span class="op">+</span> c_)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> <span class="bu">float</span>(np.<span class="bu">sum</span>(p_model))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> p_model<span class="op">/</span>Z</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> p_s(size, T):</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#size: tuple - (n_r, n_c)</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Used in exact Hamiltonian models</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">#   -calculate e^-(H(sig)/T) /Z</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> size[<span class="dv">0</span>]<span class="op">*</span>size[<span class="dv">1</span>]</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    p_model <span class="op">=</span> np.zeros(<span class="dv">2</span><span class="op">**</span>N)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    v_set <span class="op">=</span> np.zeros((size[<span class="dv">0</span>],size[<span class="dv">1</span>],<span class="dv">2</span><span class="op">**</span>N)) <span class="co">#set of all possible spin configurations</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(p_model)):</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        np.copyto(v_set[:,:,i], np.array([<span class="bu">int</span>(x) <span class="cf">for</span> x <span class="kw">in</span> np.binary_repr(i,width<span class="op">=</span>N)]).reshape(size))</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        p_model[i] <span class="op">=</span> np.exp(<span class="op">-</span>H(v_set[:,:,i])<span class="op">/</span>T)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> np.<span class="bu">sum</span>(p_model)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> p_model<span class="op">/</span>Z, v_set</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>p_exact,v_set <span class="op">=</span> p_s((n_v_r, n_v_c), T)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>p_model_before_train <span class="op">=</span> p_model(W, v_bias, h_bias, v_set)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="training-with-stochastic-gradient-descent" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="training-with-stochastic-gradient-descent"><span class="header-section-number">3.4</span> Training with Stochastic Gradient Descent</h2>
+<p>To train the model, need to compute the gradient of the KL divergence between the probability distribution of our data and the probability distribution defined by the RBM. Then, we can perform a stochastic gradient descent (SGD) update of our parameters.</p>
+<div id="cell-22" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>batch_size <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>num_batches <span class="op">=</span> <span class="bu">int</span>(data_set_size<span class="op">/</span>batch_size)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>num_epochs <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>learning_rate <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-23" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sigmoid(x):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">1.</span><span class="op">/</span>(<span class="dv">1</span><span class="op">+</span>np.exp(<span class="op">-</span>x))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train(W, v_bias, h_bias, k, data_set, batch_size, num_batches, num_epochs, learning_rate):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Gradient Descent Arrays</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    dW <span class="op">=</span> np.zeros_like(W)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    dv_bias <span class="op">=</span> np.zeros_like(v_bias)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    dh_bias <span class="op">=</span> np.zeros_like(h_bias)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">#Gibbs Sampling Arrays</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    v_0 <span class="op">=</span> np.empty_like(v_bias, dtype<span class="op">=</span><span class="bu">int</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    v_k <span class="op">=</span> np.empty_like(v_bias, dtype<span class="op">=</span><span class="bu">int</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    h_0 <span class="op">=</span> np.empty_like(h_bias, dtype<span class="op">=</span><span class="bu">int</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    h_k <span class="op">=</span> np.empty_like(h_bias, dtype<span class="op">=</span><span class="bu">int</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    num_data <span class="op">=</span> data_set.shape[<span class="dv">0</span>]</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> np.random.randint(num_data)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i_epoch <span class="kw">in</span> <span class="bu">range</span>(num_epochs):</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i_batches <span class="kw">in</span> <span class="bu">range</span>(num_batches):</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>            dW <span class="op">*=</span> <span class="fl">0.</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>            dv_bias <span class="op">*=</span> <span class="fl">0.</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>            dh_bias <span class="op">*=</span> <span class="fl">0.</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> i_input <span class="kw">in</span> <span class="bu">range</span>(batch_size):</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>                <span class="co"># gibbs sample</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>                v_0 <span class="op">=</span> data_set[(i_input <span class="op">+</span> start <span class="op">+</span> batch_size<span class="op">*</span>i_batches) <span class="op">%</span> num_data,:,:]</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>                v_k, h_0, h_k <span class="op">=</span> gibbs_sampling(k, v_0, W, v_bias, h_bias)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>                <span class="co"># update dW, dv_bias, ...</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>                dW <span class="op">+=</span> np.tensordot(v_0, h_0,axes<span class="op">=</span><span class="dv">0</span>) <span class="op">-</span> np.tensordot(v_k, h_k,axes<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>                dv_bias <span class="op">+=</span> v_0 <span class="op">-</span> v_k</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>                dh_bias <span class="op">+=</span> h_0 <span class="op">-</span> h_k</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Update parameters </span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>            np.copyto(W, W <span class="op">+</span> dW <span class="op">*</span> learning_rate<span class="op">/</span>batch_size)</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>            np.copyto(v_bias, v_bias <span class="op">+</span> dv_bias <span class="op">*</span> learning_rate<span class="op">/</span>batch_size)</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>            np.copyto(h_bias, h_bias <span class="op">+</span> dh_bias <span class="op">*</span> learning_rate<span class="op">/</span>batch_size)</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (i_batches<span class="op">+</span><span class="dv">1</span>) <span class="op">%</span> <span class="dv">100</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"Epoch: </span><span class="sc">%d</span><span class="st">/</span><span class="sc">%d</span><span class="st">"</span><span class="op">%</span>(i_epoch<span class="op">+</span><span class="dv">1</span>, num_epochs),</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>                      <span class="st">' Batch: </span><span class="sc">%d</span><span class="st">/</span><span class="sc">%d</span><span class="st">'</span><span class="op">%</span>(i_batches<span class="op">+</span><span class="dv">1</span>, num_batches))</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> W, v_bias, h_bias</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Call the training algorithm and then construct the probability distribution of each spin configuration based on the weights and biases in the RBM.</p>
+<div id="cell-25" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>W, v_bias, h_bias <span class="op">=</span> train(W, v_bias, h_bias, k, data_set, batch_size, num_batches, num_epochs, learning_rate)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find Probability distribution of states</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>p_model_after_train <span class="op">=</span> p_model(W, v_bias, h_bias, v_set)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch: 1/5  Batch: 100/500
+Epoch: 1/5  Batch: 200/500
+Epoch: 1/5  Batch: 300/500
+Epoch: 1/5  Batch: 400/500
+Epoch: 1/5  Batch: 500/500
+Epoch: 2/5  Batch: 100/500
+Epoch: 2/5  Batch: 200/500
+Epoch: 2/5  Batch: 300/500
+Epoch: 2/5  Batch: 400/500
+Epoch: 2/5  Batch: 500/500
+Epoch: 3/5  Batch: 100/500
+Epoch: 3/5  Batch: 200/500
+Epoch: 3/5  Batch: 300/500
+Epoch: 3/5  Batch: 400/500
+Epoch: 3/5  Batch: 500/500
+Epoch: 4/5  Batch: 100/500
+Epoch: 4/5  Batch: 200/500
+Epoch: 4/5  Batch: 300/500
+Epoch: 4/5  Batch: 400/500
+Epoch: 4/5  Batch: 500/500
+Epoch: 5/5  Batch: 100/500
+Epoch: 5/5  Batch: 200/500
+Epoch: 5/5  Batch: 300/500
+Epoch: 5/5  Batch: 400/500
+Epoch: 5/5  Batch: 500/500</code></pre>
+</div>
+</div>
+<div id="cell-26" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> KL_div(exact, model):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> <span class="fl">0.</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(exact)):</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        A <span class="op">+=</span>  exact[i] <span class="op">*</span> np.log(exact[i]<span class="op">/</span>model[i])</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-27" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>KL_b <span class="op">=</span> KL_div(p_exact, p_model_before_train)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>KL_a <span class="op">=</span> KL_div(p_exact, p_model_after_train)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'KL Divergence'</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Before Training:'</span>, KL_b)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'After Training:'</span>, KL_a)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot the probability distributions</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">10</span>))</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>plt.plot(p_exact, <span class="st">'k--'</span>,label<span class="op">=</span><span class="st">'Exact'</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.plot(p_model_before_train, label='Before Training: KL_Div:%.4f'%KL_b)</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>plt.plot(p_model_after_train, label<span class="op">=</span><span class="st">'After Training:KL_Div:</span><span class="sc">%.4f</span><span class="st">'</span><span class="op">%</span>KL_a)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>plt.yscale(<span class="st">'log'</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Probability"</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Spin Configuration"</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'best'</span>)</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>KL Divergence
+Before Training: 3.467045765617308
+After Training: 0.13813080305017178</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="rbm_files/figure-html/cell-13-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<h3 class="anchored">
+Sources
+</h3>
+<blockquote class="blockquote">
+<p>
+Torlai, Giacomo, and Roger G. Melko. “Learning thermodynamics with Boltzmann machines.” Physical Review B 94.16 (2016): 165134.
+</p>
+<p>
+Hinton, Geoffrey E. “Training products of experts by minimizing contrastive divergence.” Neural computation 14.8 (2002): 1771-1800.
+</p>
+<p>
+Morningstar, Alan, and Roger G. Melko. “Deep learning the Ising model near criticality.” arXiv preprint arXiv:1708.04622 (2017).
+</p>
+</blockquote>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/BorjaRequena\.github\.io\/Neural-Network-Course");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/rbm.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Marcin Płodzień">
+
+<title>Quantum Approximate Optimization Algorithm (QAOA) from scratch – lectures_ml</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Quantum Approximate Optimization Algorithm (QAOA) from scratch – lectures_ml">
+<meta property="og:description" content="Machine learning course of the master in Quantum Sciences">
+<meta property="og:site_name" content="lectures_ml">
+<meta name="twitter:title" content="Quantum Approximate Optimization Algorithm (QAOA) from scratch – lectures_ml">
+<meta name="twitter:description" content="Machine learning course of the master in Quantum Sciences">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lectures_ml</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/Neural-Network-Course"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../../course/quantum/qaoa.html">Automatic differentiation for quantum computing</a></li><li class="breadcrumb-item"><a href="../../course/quantum/qaoa.html">Quantum Approximate Optimization Algorithm (QAOA) from scratch</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction to Machine Learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linear models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linear regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/polynomial_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Polynomial fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Perceptron</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/probabilistic_view.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A probabilistic view on machine learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../course/applications/applications-index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Machine learning application overview</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in computer vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-nlp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in natural language processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-tabular.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks with structured data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Fundamentals of deep learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/neural_networks_from_scratch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/pytorch_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks with PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/automatic_differentiation_pytorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automatic differentiation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/multiclass_classification_problem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiclass classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/regularization_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural Networks regularization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/montecarlo_integration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo Integration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/rbm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Restricted Boltzmann Machines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Generative models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/generative/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/generative/language_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Language models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Automatic differentiation for quantum computing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/quantum/qaoa.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Quantum Approximate Optimization Algorithm (QAOA) from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/quantum/vqe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Variational Quantum Eigensolver (VQE) from scratch</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../homeworks/index_homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Homework</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1 - Regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2 - Perceptron</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/generative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3 - Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/ml_physics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4 - ML techniques in physics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/paper_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Paper report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Library</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/data_gen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Generation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/losses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Loss functions and gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/optimizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimizers</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#max-cut-problem-introduction" id="toc-max-cut-problem-introduction" class="nav-link active" data-scroll-target="#max-cut-problem-introduction"><span class="header-section-number">1</span> Max-Cut problem introduction</a>
+  <ul class="collapse">
+  <li><a href="#max-cut-problem-expressed-as-a-spin-12-problem" id="toc-max-cut-problem-expressed-as-a-spin-12-problem" class="nav-link" data-scroll-target="#max-cut-problem-expressed-as-a-spin-12-problem"><span class="header-section-number">1.1</span> Max-Cut problem expressed as a spin-1/2 problem</a></li>
+  </ul></li>
+  <li><a href="#qaoa-ansatz" id="toc-qaoa-ansatz" class="nav-link" data-scroll-target="#qaoa-ansatz"><span class="header-section-number">2</span> QAOA ansatz</a>
+  <ul class="collapse">
+  <li><a href="#qaoa-implementation-in-pytorch" id="toc-qaoa-implementation-in-pytorch" class="nav-link" data-scroll-target="#qaoa-implementation-in-pytorch"><span class="header-section-number">2.1</span> QAOA implementation in Pytorch</a>
+  <ul class="collapse">
+  <li><a href="#pauli-spin-chain-operators" id="toc-pauli-spin-chain-operators" class="nav-link" data-scroll-target="#pauli-spin-chain-operators"><span class="header-section-number">2.1.1</span> Pauli spin chain operators</a></li>
+  <li><a href="#cost-and-mixer-hamiltonians" id="toc-cost-and-mixer-hamiltonians" class="nav-link" data-scroll-target="#cost-and-mixer-hamiltonians"><span class="header-section-number">2.1.2</span> Cost and mixer Hamiltonians</a></li>
+  <li><a href="#qaoa-ansatz-1" id="toc-qaoa-ansatz-1" class="nav-link" data-scroll-target="#qaoa-ansatz-1"><span class="header-section-number">2.1.3</span> QAOA ansatz</a></li>
+  <li><a href="#optimization-loop" id="toc-optimization-loop" class="nav-link" data-scroll-target="#optimization-loop"><span class="header-section-number">2.1.4</span> Optimization loop</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">3</span> Summary</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/quantum/QAOA.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../../course/quantum/qaoa.html">Automatic differentiation for quantum computing</a></li><li class="breadcrumb-item"><a href="../../course/quantum/qaoa.html">Quantum Approximate Optimization Algorithm (QAOA) from scratch</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Quantum Approximate Optimization Algorithm (QAOA) from scratch</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Marcin Płodzień </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p><a href="https://githubtocolab.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/quantum/QAOA.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab"></a></p>
+<p>The QAOA algorithm is a quantum algorithm used to solve optimization problems by finding an extremum of a given cost function. The QAOA was first introduced by E. Farhi, J. Goldstone, and S. Gutmann in <a href="https://arxiv.org/abs/1411.4028">A Quantum Approximate Optimization Algorithm</a>. The algorithm has been shown to be efficient for solving certain optimization problems, such as the Max-Cut problem, which is NP-hard.</p>
+<p>In the following, we will implement QAOA for the Max-Cut problem from scratch using Pytorch and its automatic differentiation libraries.</p>
+<section id="max-cut-problem-introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Max-Cut problem introduction</h1>
+<p>Max-Cut is a classic optimization problem. The goal is to divide a graph into two sets, such that the sum of weights of the edges connecting vertices in different sets is maximized. It is an NP-hard problem, meaning it is challenging to solve for large graphs using classical algorithms in a reasonable amount of time.</p>
+<p>In the Max-Cut problem, a graph is represented by vertices (nodes) and edges (connections) between the vertices. Each edge has a weight meaning the cost of cutting that edge. The goal is to find a way to divide the nodes into two sets such that the sum of the weights of the edges connecting nodes in different sets is maximized.</p>
+<p>It has been shown that the QAOA algorithm can be applied to the Max-Cut problem, providing a quantum-inspired solution to the problem. The QAOA algorithm’s efficiency for solving the Max-Cut problem is still being explored and is an active area of research.</p>
+<p>Let us consider a planar graph <span class="math inline">\(G = (V,E)\)</span>, having vertices (or nodes) enumerated by index <span class="math inline">\(i \in V\)</span>, and edges being a connected pars of vertices, i.e.&nbsp;<span class="math inline">\(E = \{ (i,k) | i,k\in V, i\ne k\}\)</span>. Each edge has a weigth <span class="math inline">\(w_{ik}&gt;0\)</span>. We consider undirected graph, thus <span class="math inline">\(w_{ik} = w_{ki}\)</span>.</p>
+<p>We prepare a <span class="math inline">\(\textit{cut}\)</span> of a graph <span class="math inline">\(G\)</span>, i.e.&nbsp;we divide graph <span class="math inline">\(G\)</span> into two parts <span class="math inline">\(S\)</span>, <span class="math inline">\(T\)</span> such that <span class="math inline">\(V = S\cup T\)</span>. To each node belonging to subgraph <span class="math inline">\(S\)</span> we assign value <span class="math inline">\(z_i = +1\)</span>, while to each node in subgraph <span class="math inline">\(T\)</span> we assing value of <span class="math inline">\(z_i = -1\)</span>. To check if two nodes belong to the same part, we can define a function <span class="math display">\[\begin{equation}
+c_{ik} = \frac{1-z_iz_k}{2},
+\end{equation}\]</span> which takes value <span class="math inline">\(0\)</span> if two nodes <span class="math inline">\(i,k\)</span> belong to the same subset, are <span class="math inline">\(1\)</span> if nodes belong to different subsets.</p>
+<p>Finally, we can define a <span class="math inline">\(\textit{value of a cut}\)</span> as <span class="math display">\[\begin{equation}
+  P = \sum_{i,k} c_{ik}w_{ik}.
+\end{equation}\]</span></p>
+<p>The Max-Cut is a problem of finding such a <span class="math inline">\(\textit{cut}\)</span> of a graph, which maximizes <span class="math inline">\(P\)</span>. We can write <span class="math display">\[\begin{equation}
+P = \sum_{i&lt;k}w_{ik} - \sum_{i&lt;k}w_{ik}z_iz_k = W - C(\vec{z}),
+\end{equation}\]</span> where <span class="math inline">\(W = \sum_{i&lt;k}w_{ik}\)</span> is a positive constant number, and <span class="math inline">\(C(\vec{z}) = \sum_{i&lt;k}w_{ik}z_iz_k\)</span> is a cost function which we want to minimize.</p>
+<section id="max-cut-problem-expressed-as-a-spin-12-problem" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="max-cut-problem-expressed-as-a-spin-12-problem"><span class="header-section-number">1.1</span> Max-Cut problem expressed as a spin-1/2 problem</h2>
+<p>The Max-Cut problem can be cast to solving a quantum mechanical problem of spin-1/2 system. To the <span class="math inline">\(i\)</span>-th node with the value <span class="math inline">\(z_i\)</span> we assign the state of the spin-1/2, i.e.:</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+    z_i = +1 \to &amp; |0\rangle \equiv |\uparrow\rangle \\
+    z_i = -1 \to &amp; |1\rangle \equiv |\downarrow\rangle.
+\end{split}
+\end{equation}\]</span> As such, minimizing the cost function <span class="math inline">\(C(\vec{z})\)</span> can be considered as fidning the spin configuration which minimizes the <span class="math inline">\(\textit{cost Hamiltonian}\)</span>, defined as:</p>
+<p><span class="math display">\[\begin{equation}
+\hat{H}_C = \sum_{ik} w_{ik} \hat{\sigma}^z_i\hat{\sigma}^z_k,
+\end{equation}\]</span> where <span class="math inline">\(\hat{\sigma}^z_i\)</span> is a Pauli-Z matrix acting on <span class="math inline">\(i\)</span>-th qubit.</p>
+<p>While we consider a planar graph and enumerate spins with index <span class="math inline">\(i\)</span>, the problem is equivalent to considering a one-dimensional chain of spins connected adequately via edges. For simplicity, let’s consider a simple two dimensional grid of size <span class="math inline">\(L_x \times L_y\)</span>, where each node of the grid we <span class="math inline">\((i_x, i_y)\)</span> have one spin-<span class="math inline">\(1/2\)</span>, and <span class="math inline">\(i_x = 1,\dots,L_x\)</span>, <span class="math inline">\(i_y = 1,\dots,L_y\)</span>. We assume <span class="math inline">\(w_{ik} = 1\)</span> where two spins are nearest neighbors and <span class="math inline">\(w_{ik}=0\)</span> otherwise.</p>
+<p>Next, to each spin at node <span class="math inline">\((i_x,i_y)\)</span> we can assign a label <span class="math inline">\(i \equiv (i_y - 1)L_x + i_x\)</span>, , i.e.&nbsp;<span class="math inline">\((i_x, i_y) \to i\)</span>. With such a mapping, our original 2-dimensional problem can be cast to a one-dimensional problem with <span class="math inline">\(L = L_x L_y\)</span> spins-<span class="math inline">\(1/2\)</span>, where total Hilbert space has size <span class="math inline">\({\cal D} = 2^{L}\)</span>.</p>
+<p>The Quantum Approximate Optimization Algorithm is based on a specific form of an ansatz for optimal many-body wave function <span class="math inline">\(|\psi_*\rangle\)</span> minimizing the cost Hamiltonian <span class="math inline">\(\hat{H}_C\)</span>. The optimal parameters of an ansatz are obtained in an iterative procedure.</p>
+</section>
+</section>
+<section id="qaoa-ansatz" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> QAOA ansatz</h1>
+<p>The QAOA ansatz for the many-body wave-function providing optimal spin configuration minimizing the cost Hamiltonian <span class="math inline">\(\hat{H}_C\)</span> has the following form:</p>
+<p><span class="math display">\[\begin{equation}
+|\psi(\vec{\beta},\vec{\gamma}\rangle = U_B(\beta_1)U_C(\gamma_1)\dots U_B(\beta_p)U_C(\gamma_p)|s\rangle,
+\end{equation}\]</span></p>
+<p>where an initial state <span class="math inline">\(|s\rangle\)</span> is coherent superposition on spin up/down configuration for each qubit. State <span class="math inline">\(|s\rangle\)</span> is generated via acting with the Hadamard operator on <span class="math inline">\(i\)</span>-th qubit: <span class="math display">\[\begin{equation}
+    |s\rangle = \sum_{i=1}^{L} H_i|0\rangle \equiv  \sum_{i=1}^{L} H_i|\uparrow\rangle.
+\end{equation}\]</span></p>
+<p>The variational vectors <span class="math inline">\(\vec{\beta} = (\beta_1,\dots,\beta_p)\)</span>, and <span class="math inline">\(\vec{\gamma} = (\gamma_1,\dots,\gamma_p)\)</span> parametrize two unitaries: <span class="math display">\[\begin{equation}
+\begin{split}
+   U_B(\beta_l) &amp; = e^{-i\beta_l \hat{H}_B},\\
+   U_C(\gamma_l) &amp; = e^{-i\gamma_l \hat{H}_C},
+\end{split}
+\end{equation}\]</span> where <span class="math inline">\(\hat{H}_C\)</span> is our cost Hamiltonian, and <span class="math inline">\(\hat{H}_B = \sum_{i} \hat{\sigma}^x_i\)</span> is called a <span class="math inline">\(\textit{mixer Hamiltonian}\)</span>. The number of variational coeficients <span class="math inline">\(p\)</span> is a hyperparameter for the QAOA.</p>
+<p>In the QOAO we iteratively update parameters <span class="math inline">\(\vec{\beta}\)</span>, and <span class="math inline">\(\vec{\gamma}\)</span> in order to minimize the cost function, i.e.&nbsp;expectation value of the cost Hamiltonian: <span class="math display">\[\begin{equation}
+F(\vec{\beta},\vec{\gamma}) = \langle\psi(\vec{\beta},\vec{\gamma})|\hat{H}_C|\psi(\vec{\beta},\vec{\gamma})\rangle.
+\end{equation}\]</span> The optimization procedure can be done with the help of automatic differentiation.</p>
+<p>After finding the optimal set of parameters <span class="math inline">\(\vec{\beta}_*\)</span>, <span class="math inline">\(\vec{\gamma}_*\)</span> defining the many-body wave function <span class="math display">\[\begin{equation}
+|\psi_*\rangle\equiv |\psi(\vec{\beta}_*,\vec{\gamma}_*)\rangle,
+\end{equation}\]</span> the optimal spin configuration for our problem corresponds to index <span class="math inline">\(k\)</span> of the Fock vector from our basis, for which the quantity <span class="math display">\[\begin{equation}
+|\langle v_k|\psi_*\rangle|^2
+\end{equation}\]</span> is maximal, where <span class="math inline">\(|v_k\rangle\)</span> is a Fock vector of the <span class="math inline">\(L\)</span>-qubit Hilbert space: <span class="math display">\[\begin{equation}
+\begin{split}
+   |v_1\rangle &amp; = |\uparrow \uparrow \dots \uparrow \rangle \\
+   |v_2\rangle &amp; = |\uparrow \uparrow \dots \downarrow \rangle \\
+   &amp; \vdots \\
+   |v_D\rangle &amp; = |\downarrow \downarrow \dots \downarrow \rangle \\
+\end{split}
+\end{equation}\]</span> In the following we denote: <span class="math inline">\(\uparrow \equiv 1\)</span>, <span class="math inline">\(\downarrow \equiv -1\)</span>.</p>
+<p>Finally, we repeat the optimization procedure <span class="math inline">\(N\)</span> times, and we plot histogram of the optimal spin configuration indexed by <span class="math inline">\(k\)</span>. In the limit of <span class="math inline">\(N\to\infty\)</span> the most probable spin configuration is the solution to our classical optimization problem.</p>
+<blockquote class="blockquote">
+<p>For small number of nodes <span class="math inline">\(L\)</span> the QAOA is not needed: we can simply diagonalize cost Hamiltonian <span class="math inline">\(\hat{H}_C\)</span>, and find the spin configuration which minimizes cost function. However for <span class="math inline">\(L \le 25\)</span> this brute-force approach fails due to exponential increase of the corresponding Hilbert space <span class="math inline">\({\cal D} = 2^L\)</span></p>
+</blockquote>
+<section id="qaoa-implementation-in-pytorch" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="qaoa-implementation-in-pytorch"><span class="header-section-number">2.1</span> QAOA implementation in Pytorch</h2>
+<section id="pauli-spin-chain-operators" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="pauli-spin-chain-operators"><span class="header-section-number">2.1.1</span> Pauli spin chain operators</h3>
+<p>The starting point is to implement the Pauli spin chain operators. On a spin-<span class="math inline">\(1/2\)</span> chain with <span class="math inline">\(L\)</span> spins, the Pauli spin operators <span class="math inline">\(X_i,Y_i,Z_i\)</span> acting on <span class="math inline">\(i\)</span>-th spin are defined as: <span class="math display">\[\begin{equation}
+\begin{split}
+X_i  &amp;= \mathbb{1}_1\otimes\dots\mathbb{1}_{i-1}\otimes\hat{\sigma}^x\otimes\mathbb{1}_{i+1}\dots\mathbb{1}_{L},\\
+Y_i  &amp;= \mathbb{1}_1\otimes\dots\mathbb{1}_{i-1}\otimes\hat{\sigma}^y\otimes\mathbb{1}_{i+1}\dots\mathbb{1}_{L},\\
+Z_i  &amp;= \mathbb{1}_1\otimes\dots\mathbb{1}_{i-1}\otimes\hat{\sigma}^z\otimes\mathbb{1}_{i+1}\dots\mathbb{1}_{L},
+\end{split}
+\end{equation}\]</span> where <span class="math inline">\(\hat{\sigma}^{x,y,z}\)</span> are <span class="math inline">\(2\times2\)</span> Pauli operators.</p>
+<p>In a similar manner we can define Hadamard matrix <span class="math inline">\(H_i\)</span> acting on <span class="math inline">\(i\)</span>-th spin, i.e. <span class="math display">\[\begin{equation}
+H_i = \mathbb{1}_1\otimes\dots\mathbb{1}_{i-1}\otimes H\otimes\mathbb{1}_{i+1}\dots\mathbb{1}_{L},
+\end{equation}\]</span> where <span class="math inline">\(H = \frac{\hat{\sigma}^x + \hat{\sigma}^z}{\sqrt{2}}\)</span>.</p>
+<p>Let’s import necessary librarires and define Pauli operators, and Hadamard operator, on a spin chain of lenght <span class="math inline">\(L=L_x\times L_y\)</span>. We consider <span class="math inline">\(L_x = 3\)</span>, <span class="math inline">\(L_y = 2\)</span>:</p>
+<div id="5624c823" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch <span class="im">as</span> pt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch <span class="im">import</span> matrix_exp <span class="im">as</span> expm</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.linalg <span class="im">import</span> eigh <span class="im">as</span> eigh</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_linear_index(i_x, i_y):</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>  (i_y<span class="op">-</span><span class="dv">1</span>)<span class="op">*</span>Lx <span class="op">+</span> i_x</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_Identity(k):  <span class="co"># returns k-tensor product of the identity operator, ie. Id^k</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    Id <span class="op">=</span> id_local</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, k<span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        Id <span class="op">=</span> pt.kron(Id, id_local)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Id</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>         </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_string_operator(A, L, i):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    Op <span class="op">=</span> A</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i <span class="op">==</span> <span class="dv">1</span>):</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        Op <span class="op">=</span> pt.kron(A,get_Identity(L<span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Op</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i <span class="op">==</span> L):</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        Op <span class="op">=</span> pt.kron(get_Identity(L<span class="op">-</span><span class="dv">1</span>),A)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Op</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i<span class="op">&gt;</span><span class="dv">0</span> <span class="kw">and</span> i<span class="op">&lt;</span>L):</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        Op <span class="op">=</span> pt.kron(get_Identity(i<span class="op">-</span><span class="dv">1</span>), pt.kron(Op, get_Identity(L<span class="op">-</span>i)))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Op</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>id_local <span class="op">=</span> pt.tensor([[<span class="fl">1.</span>,<span class="dv">0</span>],[<span class="dv">0</span>,<span class="fl">1.</span>]])</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>sigma_x <span class="op">=</span> pt.tensor([[<span class="dv">0</span>,<span class="fl">1.</span>],[<span class="fl">1.</span>,<span class="dv">0</span>]])</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>sigma_y <span class="op">=</span> <span class="ot">1j</span><span class="op">*</span>pt.tensor([[<span class="dv">0</span>,<span class="op">-</span><span class="fl">1.</span>],[<span class="fl">1.</span>,<span class="dv">0</span>]])</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>sigma_z <span class="op">=</span> pt.tensor([[<span class="fl">1.</span>,<span class="dv">0</span>],[<span class="dv">0</span>,<span class="op">-</span><span class="fl">1.</span>]])</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>hadamard <span class="op">=</span> <span class="fl">1.0</span><span class="op">/</span>pt.sqrt(pt.tensor(<span class="dv">2</span>))<span class="op">*</span>pt.tensor([[<span class="dv">1</span>,<span class="dv">1</span>],[<span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>]])<span class="op">+</span><span class="ot">1j</span><span class="op">*</span><span class="dv">0</span>    </span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>Lx <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>Ly <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> Lx<span class="op">*</span>Ly</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> <span class="dv">2</span><span class="op">**</span>L</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>Id <span class="op">=</span> get_string_operator(id_local, L, <span class="dv">1</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> {}</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> {}</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> {}</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>Hadamard <span class="op">=</span> {}</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> qubit_i_y <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, Ly<span class="op">+</span><span class="dv">1</span>):    <span class="co"># Loop over indices on a 2-dimensional grid (i_x,i_y)</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> qubit_i_x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Lx<span class="op">+</span><span class="dv">1</span>): <span class="co">#</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>        qubit_i <span class="op">=</span> get_linear_index(qubit_i_x, qubit_i_y)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>        X[qubit_i] <span class="op">=</span> get_string_operator(sigma_x, L, qubit_i)        <span class="co"># Define operator X_i acting on spin (i_x,i_y)</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        Y[qubit_i] <span class="op">=</span> get_string_operator(sigma_y, L, qubit_i)        <span class="co"># Define operator Y_i acting on spin (i_x,i_y)</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>        Z[qubit_i] <span class="op">=</span> get_string_operator(sigma_z, L, qubit_i)        <span class="co"># Define operator Z_i acting on spin (i_x,i_y)</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>        Hadamard[qubit_i] <span class="op">=</span> get_string_operator(hadamard, L, qubit_i)<span class="co"># Define operator H_i acting on spin (i_x,i_y)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As we mentioned above, all operators are expressed in the diagonal basis of the <span class="math inline">\(Z = \sum_{i=1}^{L} Z_i\)</span> operator, i.e.</p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+   X &amp; = \sum_{k,l} &lt;v_k|X|v_l&gt;|v_k\rangle\langle v_l| \\
+   Y &amp; = \sum_{k,l} &lt;v_k|Y|v_l&gt;|v_k\rangle\langle v_l| \\
+   Z &amp; = \sum_{k,l} &lt;v_k|Z|v_l&gt;|v_k\rangle\langle v_l| \delta_{k,l},
+\end{split}
+\end{equation}\]</span> and <span class="math display">\[\begin{equation}
+\begin{split}
+   |v_1\rangle &amp; = |\uparrow \uparrow \dots \uparrow \rangle \\
+   |v_2\rangle &amp; = |\uparrow \uparrow \dots \downarrow \rangle \\
+   &amp; \vdots \\
+   |v_D\rangle &amp; = |\downarrow \downarrow \dots \downarrow \rangle \\
+\end{split}
+\end{equation}\]</span></p>
+<p>In the following we denote: <span class="math inline">\(\uparrow \equiv 1\)</span>, <span class="math inline">\(\downarrow \equiv -1\)</span>.</p>
+<p>Let’s us construct our Hilbert space:</p>
+<div id="1174af8d" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> <span class="dv">2</span><span class="op">**</span>L</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>basis <span class="op">=</span> pt.zeros((D,L)) </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> v_i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,D):</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    fock_state <span class="op">=</span> pt.zeros(D) </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    fock_state[v_i] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,L<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        basis[v_i,i<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> pt.vdot(fock_state, Z[i]<span class="op">@</span>fock_state)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> v_i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,D):  </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    string_fock_vector <span class="op">=</span> <span class="st">"|v_"</span> <span class="op">+</span> <span class="st">"</span><span class="sc">{:03d}</span><span class="st">"</span>.<span class="bu">format</span>(v_i) <span class="op">+</span> <span class="st">"&gt; = |"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,L<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        tmp <span class="op">=</span> <span class="bu">int</span>(basis[v_i,i<span class="op">-</span><span class="dv">1</span>].item())</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span>(tmp<span class="op">==</span><span class="dv">1</span>):</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            string_plus_minus <span class="op">=</span> <span class="st">" </span><span class="sc">{:1d}</span><span class="st">"</span>.<span class="bu">format</span>(tmp)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span>(tmp<span class="op">==-</span><span class="dv">1</span>):</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>            string_plus_minus <span class="op">=</span> <span class="st">"</span><span class="sc">{:1d}</span><span class="st">"</span>.<span class="bu">format</span>(tmp)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>         </span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        string_fock_vector <span class="op">=</span> string_fock_vector <span class="op">+</span> string_plus_minus <span class="op">+</span> <span class="st">" "</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    string_fock_vector <span class="op">=</span> string_fock_vector <span class="op">+</span> <span class="st">"&gt;"</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(string_fock_vector)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="cost-and-mixer-hamiltonians" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="cost-and-mixer-hamiltonians"><span class="header-section-number">2.1.2</span> Cost and mixer Hamiltonians</h3>
+<p>Our cost Hamiltonian for Max-Cut problem has the following form:</p>
+<p><span class="math display">\[\begin{equation}
+\hat{H}_C = \frac{1}{2}\sum_{\langle i,j\rangle} Z_i Z_j,
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(\langle i,j\rangle\)</span> means sum over nearest neighbors. Note, that each node <span class="math inline">\(i\)</span> has two coordinates, i.e.&nbsp;$ i (i_x, i_y)$:</p>
+<div id="6526a153" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>H_C <span class="op">=</span> pt.zeros((D,D)) <span class="op">+</span> <span class="dv">0</span><span class="op">*</span><span class="ot">1j</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> qubit_i_x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Lx<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> qubit_i_y <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Ly<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        qubit_i <span class="op">=</span> get_linear_index(qubit_i_x,qubit_i_y)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> qubit_j_x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Lx<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> qubit_j_y <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Ly<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                qubit_j <span class="op">=</span> get_linear_index(qubit_j_x,qubit_j_y)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Sum over nearest neighbors only</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span>(np.<span class="bu">abs</span>(qubit_i_x <span class="op">-</span> qubit_j_x)<span class="op">==</span><span class="dv">1</span> <span class="kw">and</span> np.<span class="bu">abs</span>(qubit_i_y <span class="op">-</span> qubit_j_y)<span class="op">==</span><span class="dv">0</span>):</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                    H_C <span class="op">=</span> H_C <span class="op">+</span> Z[qubit_i]<span class="op">@</span>Z[qubit_j]</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span>(np.<span class="bu">abs</span>(qubit_i_x <span class="op">-</span> qubit_j_x)<span class="op">==</span><span class="dv">0</span> <span class="kw">and</span> np.<span class="bu">abs</span>(qubit_i_y <span class="op">-</span> qubit_j_y)<span class="op">==</span><span class="dv">1</span>):</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                    H_C <span class="op">=</span> H_C <span class="op">+</span> Z[qubit_i]<span class="op">@</span>Z[qubit_j]</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>H_C <span class="op">=</span> <span class="fl">0.5</span><span class="op">*</span>H_C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The mixer Hamiltonian has the following form:</p>
+<p><span class="math display">\[\begin{equation}
+\hat{H}_B = \sum_i X_i
+\end{equation}\]</span></p>
+<div id="55f87351" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>H_B <span class="op">=</span> pt.zeros((D,D)) <span class="op">+</span> <span class="dv">0</span><span class="op">*</span><span class="ot">1j</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> qubit_i_x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Lx<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> qubit_i_y <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Ly<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        qubit_i <span class="op">=</span> get_linear_index(qubit_i_x,qubit_i_y)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        H_B <span class="op">=</span> H_B <span class="op">+</span> X[qubit_i]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we can define two unitary evolution operators for cost, and mixer Hamiltonians, parametrized by <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\beta\)</span></p>
+<p><span class="math display">\[\begin{equation}
+\begin{split}
+U_B(\beta) &amp; = e^{-i\beta \hat{H}_B} \\
+U_C(\gamma) &amp; = e^{-i\gamma \hat{H}_C}.
+\end{split}
+\end{equation}\]</span></p>
+<div id="d753bfc3" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> U_B(H_B,beta):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> expm(<span class="op">-</span><span class="ot">1j</span><span class="op">*</span>beta<span class="op">*</span>H_B)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> U_C(H_C,gamma):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> expm(<span class="op">-</span><span class="ot">1j</span><span class="op">*</span>gamma<span class="op">*</span>H_C)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="qaoa-ansatz-1" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="qaoa-ansatz-1"><span class="header-section-number">2.1.3</span> QAOA ansatz</h3>
+<p>Finally, we can define the QAOA ansatz, parametrized by two set of parameters, <span class="math inline">\(\vec{\beta}\)</span>, and <span class="math inline">\(\vec{\gamma}\)</span>, having <span class="math inline">\(p\)</span> elements: <span class="math display">\[\begin{equation}
+|\psi(\vec{\beta},\vec{\gamma})\rangle = \prod_{l = 1}^p U_B(\beta_l)U_C(\gamma_l)|s\rangle,
+\end{equation}\]</span> where state <span class="math inline">\(|s\rangle\)</span> is coherent superposition of states <span class="math inline">\(|0\rangle\)</span> adn <span class="math inline">\(|1\rangle\)</span> of each qubit, i.e. <span class="math display">\[\begin{equation}
+|s\rangle = \prod_{i = 1}^{L} H_i|0\rangle,
+\end{equation}\]</span> where <span class="math inline">\(H_i\)</span> is Hadamard matrix acting on <span class="math inline">\(i\)</span>-th qubit initialized in <span class="math inline">\(|0\rangle\)</span> state.</p>
+<p>Length <span class="math inline">\(p\)</span> of vectors <span class="math inline">\(\vec{\beta}\)</span>, and <span class="math inline">\(\vec{\gamma}\)</span> is one of the hyperparameters in <span class="math inline">\(QAOA\)</span> anstaz:</p>
+<div id="6a09d31a" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> psi(parameters):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    beta_vec  <span class="op">=</span> parameters[<span class="dv">0</span>,:]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    gamma_vec <span class="op">=</span> parameters[<span class="dv">1</span>,:]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    psi_tmp <span class="op">=</span> pt.zeros(D) <span class="op">+</span> <span class="dv">0</span><span class="op">*</span><span class="ot">1j</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    psi_tmp[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">1</span> <span class="co"># in basis of total Z operator Z = \sum_i Z_i this elements corresponds  </span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                   <span class="co"># to configurations with all spins pointing up</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># prepare Hadamard operation on each qubit</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> qubit_i_x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Lx<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> qubit_i_y <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,Ly<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            qubit_i <span class="op">=</span> get_linear_index(qubit_i_x,qubit_i_y)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            psi_tmp <span class="op">=</span> Hadamard[qubit_i]<span class="op">@</span>psi_tmp</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,p):</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        psi_tmp <span class="op">=</span> U_C(H_C, gamma_vec[i])<span class="op">@</span>psi_tmp</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        psi_tmp <span class="op">=</span> U_B(H_B, beta_vec[i])<span class="op">@</span>psi_tmp</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> psi_tmp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we define a cost function as a expectation value of the cost Hamilonian <span class="math inline">\(F(\vec{\beta},\vec{\gamma}) = \langle \psi(\vec{\beta},\vec{\gamma})|\hat{H}_C|\psi(\vec{\beta},\vec{\gamma})\rangle\)</span>:</p>
+<div id="08a9f51a" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> F(parameters):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pt.vdot(psi(parameters), H_C<span class="op">@</span>psi(parameters)).real</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="optimization-loop" class="level3" data-number="2.1.4">
+<h3 data-number="2.1.4" class="anchored" data-anchor-id="optimization-loop"><span class="header-section-number">2.1.4</span> Optimization loop</h3>
+<p>In the optimization loop, we choose a number of layers <span class="math inline">\(p\)</span>, and initialize the <span class="math inline">\(\vec{\beta}\)</span>, and <span class="math inline">\(\vec{\gamma}\)</span> as a random number. Next, with the help of automatic differentiation, we find a set of parameters that minimizes the expectation value of the cost Hamiltonian <span class="math inline">\(\hat{H}_C\)</span>. When we find the optimal set of parameters, our solution to the problem (i.e.&nbsp;spin configuration) corresponds to the Fock state with the maximal probability of the final wave-function, i.e.&nbsp;<span class="math inline">\(v_{\rm optimal} = argmax(\rho)\)</span></p>
+<div id="47504e47" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>parameters <span class="op">=</span> pt.rand((<span class="dv">2</span>,p),requires_grad<span class="op">=</span><span class="va">True</span>)   <span class="co"># first row corresponds to (beta_1,...,beta_p)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                                                 <span class="co"># second row corresponds to (gamma_1,...,gamma_p)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> pt.optim.Adam([parameters],lr <span class="op">=</span> <span class="fl">1e-2</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>loss_vs_epoch <span class="op">=</span> []</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,<span class="dv">100</span>):</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> F(parameters)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    optimizer.zero_grad()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    loss.backward()</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    optimizer.step()</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    loss_vs_epoch.append(loss.item())</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>psi_optimal <span class="op">=</span> psi(parameters)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> np.<span class="bu">abs</span>(psi_optimal.detach().numpy())<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>i_optimal <span class="op">=</span> np.argmax(rho)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Optimal spins configuration after single run corresponds to basis vector with index k = '</span> <span class="op">+</span> <span class="bu">str</span>(i_optimal))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we have to repeat an optimization procedure and make histogram of optimal configurations.</p>
+<div id="efcda2af" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>N_runs <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>histogram <span class="op">=</span> np.zeros(D)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> run <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,N_runs):</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    parameters <span class="op">=</span> pt.rand((<span class="dv">2</span>,p),requires_grad<span class="op">=</span><span class="va">True</span>) </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> pt.optim.Adam([parameters],lr <span class="op">=</span> <span class="fl">1e-2</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    loss_vs_epoch <span class="op">=</span> []</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,<span class="dv">200</span>):</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> F(parameters)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        loss_vs_epoch.append(loss.item())</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    psi_optimal <span class="op">=</span> psi(parameters)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    rho <span class="op">=</span> np.<span class="bu">abs</span>(psi_optimal.detach().numpy())<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    histogram[np.argmax(rho)] <span class="op">+=</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The optimal configuration corresponds to:</p>
+<div id="afcaa397" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>k_optimal <span class="op">=</span> np.argmax(histogram)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>string_fock_vector <span class="op">=</span> <span class="st">"|v_"</span> <span class="op">+</span> <span class="st">"</span><span class="sc">{:03d}</span><span class="st">"</span>.<span class="bu">format</span>(v_i) <span class="op">+</span> <span class="st">"&gt; = |"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,L<span class="op">+</span><span class="dv">1</span>):</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    tmp <span class="op">=</span> <span class="bu">int</span>(basis[k_optimal,i<span class="op">-</span><span class="dv">1</span>].item())</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(tmp<span class="op">==</span><span class="dv">1</span>):</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        string_plus_minus <span class="op">=</span> <span class="st">" </span><span class="sc">{:1d}</span><span class="st">"</span>.<span class="bu">format</span>(tmp)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(tmp<span class="op">==-</span><span class="dv">1</span>):</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        string_plus_minus <span class="op">=</span> <span class="st">"</span><span class="sc">{:1d}</span><span class="st">"</span>.<span class="bu">format</span>(tmp)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    string_fock_vector <span class="op">=</span> string_fock_vector <span class="op">+</span> string_plus_minus <span class="op">+</span> <span class="st">" "</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>string_fock_vector <span class="op">=</span> string_fock_vector <span class="op">+</span> <span class="st">"&gt;"</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(string_fock_vector)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="summary" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Summary</h1>
+<p>In the provided example we went step-by-step through the QAOA algorithm to find a solution to a classical Max-Cut problem which is NP-hard.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/BorjaRequena\.github\.io\/Neural-Network-Course");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/quantum/QAOA.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

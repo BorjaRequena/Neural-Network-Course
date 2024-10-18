@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Borja Requena">
+
+<title>Typical tasks in computer vision – lectures_ml</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Typical tasks in computer vision – lectures_ml">
+<meta property="og:description" content="Machine learning course of the master in Quantum Sciences">
+<meta property="og:site_name" content="lectures_ml">
+<meta name="twitter:title" content="Typical tasks in computer vision – lectures_ml">
+<meta name="twitter:description" content="Machine learning course of the master in Quantum Sciences">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lectures_ml</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/Neural-Network-Course"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../../course/applications/applications-index.html">Machine learning application overview</a></li><li class="breadcrumb-item"><a href="../../course/applications/applications-cv.html">Typical tasks in computer vision</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction to Machine Learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linear models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linear regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/polynomial_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Polynomial fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Perceptron</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/probabilistic_view.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A probabilistic view on machine learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../course/applications/applications-index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Machine learning application overview</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-cv.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Typical tasks in computer vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-nlp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in natural language processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-tabular.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks with structured data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Fundamentals of deep learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/neural_networks_from_scratch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/pytorch_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks with PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/automatic_differentiation_pytorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automatic differentiation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/multiclass_classification_problem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiclass classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/regularization_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural Networks regularization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/montecarlo_integration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo Integration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/rbm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Restricted Boltzmann Machines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Generative models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/generative/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/generative/language_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Language models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Automatic differentiation for quantum computing</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/quantum/qaoa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quantum Approximate Optimization Algorithm (QAOA) from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/quantum/vqe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Variational Quantum Eigensolver (VQE) from scratch</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../homeworks/index_homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Homework</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1 - Regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2 - Perceptron</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/generative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3 - Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/ml_physics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4 - ML techniques in physics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/paper_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Paper report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Library</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/data_gen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Generation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/losses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Loss functions and gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/optimizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimizers</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#image-classification" id="toc-image-classification" class="nav-link" data-scroll-target="#image-classification"><span class="header-section-number">2</span> Image classification</a>
+  <ul class="collapse">
+  <li><a href="#multi-label-classification" id="toc-multi-label-classification" class="nav-link" data-scroll-target="#multi-label-classification"><span class="header-section-number">2.1</span> Multi-label classification</a></li>
+  <li><a href="#image-segmentation" id="toc-image-segmentation" class="nav-link" data-scroll-target="#image-segmentation"><span class="header-section-number">2.2</span> Image segmentation</a></li>
+  </ul></li>
+  <li><a href="#image-regression" id="toc-image-regression" class="nav-link" data-scroll-target="#image-regression"><span class="header-section-number">3</span> Image regression</a></li>
+  <li><a href="#other-computer-vision-applications" id="toc-other-computer-vision-applications" class="nav-link" data-scroll-target="#other-computer-vision-applications"><span class="header-section-number">4</span> Other computer vision applications</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/applications/applications-cv.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../../course/applications/applications-index.html">Machine learning application overview</a></li><li class="breadcrumb-item"><a href="../../course/applications/applications-cv.html">Typical tasks in computer vision</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Typical tasks in computer vision</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Borja Requena </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p><a href="https://githubtocolab.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/applications/applications-cv.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab"></a></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this notebook we make extensive use of transfer learning, a technique that we will explain in a couple of lessons.</p>
+<p>Furthermore, we use the <a href="https://docs.fast.ai/">fastai</a> <span class="citation" data-cites="fastai">(<a href="#ref-fastai" role="doc-biblioref">Howard and Gugger 2020</a>)</span> library to download the data for the different tasks and easily train our models.</p>
+</div>
+</div>
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>Computer vision is the field of machine learning that deals with images in any form, be it medical images, our dog’s cutest picture, some grayscale retro portrait or 8k videos. Processing these images, we can perform all sorts of tasks from identifying components within them to creating entirely new ones.</p>
+<p>Computer vision constitutes one of the most successful fields of machine learning. While in other fields, such as natural language processing, the progress has been slower, machines have long shown super-human results in the field of computer vision. For instance, a <a href="https://www.nature.com/articles/s41551-018-0195-0">remarkable work</a> <span class="citation" data-cites="Poplin2018NatBiomedEng">(<a href="#ref-Poplin2018NatBiomedEng" role="doc-biblioref">Poplin et al. 2018</a>)</span> (among so many others!) shows how we can detect a person’s age, gender, smoking status and systolic blood pressure, as well as inferring several risk factors directly from retinal images. At that time, we did not know inferring such information was even possible!</p>
+<p>Here, we provide some basic examples of computer vision tasks. The goal is to obtain an idea of the typical kind of problems we can tackle and think about how <strong>you</strong> can use these to solve your problems. Currently, the most common practice in machine learning is to take a generic pre-trained model and adapt it to our specific task. This is known as transfer learning and we will make extensive usage of this technique to quickly solve the presented tasks. We will see transfer learning in a couple of lectures.</p>
+</section>
+<section id="image-classification" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Image classification</h1>
+<p>The most prototypical computer vision task is image classification. We do not rest easy if our machine learning courses and presentations do not display a cat and a dog image.</p>
+<p>In image classification, we assign labels (among a finite pool) to images. Here, we illustrate the process with a rather funny example in which we aim to classify pet images into their respective breeds. The <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">dataset</a> contains images of cats and dogs belonging to 37 different breeds. Let’s have a look at some samples to get a better understanding of the task at hand.</p>
+<div id="cell-5" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> untar_data(URLs.PETS)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pets <span class="op">=</span> DataBlock(blocks <span class="op">=</span> (ImageBlock, CategoryBlock),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                 get_items <span class="op">=</span> get_image_files, </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                 splitter <span class="op">=</span> RandomSplitter(seed<span class="op">=</span><span class="dv">42</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                 get_y <span class="op">=</span> using_attr(RegexLabeller(<span class="vs">r'(.+)_\d+.jpg$'</span>), <span class="st">'name'</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                 item_tfms <span class="op">=</span> Resize(<span class="dv">460</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                 batch_tfms <span class="op">=</span> aug_transforms(size<span class="op">=</span><span class="dv">224</span>, min_scale<span class="op">=</span><span class="fl">0.75</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> pets.dataloaders(path<span class="op">/</span><span class="st">"images"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>dls.show_batch(nrows<span class="op">=</span><span class="dv">2</span>, ncols<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-2-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We have images of dogs and cats that, in general, appear as the main body of the image. In some cases, we also encounter other objects that take up significant image space, such as humans or furniture. Our job will be to tell the breed to which the animal belongs to. As mentioned in the introduction, instead of training a whole model from scratch, we will take a pre-trained model and adapt it to classify these cats and dogs.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Expand to learn about the training procedure
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>In this case, we will use a <code>resnet34</code> architecture trained on the <a href="http://www.image-net.org/">Imagnet dataset</a>. To get an idea, ImageNet has +20k classes to distinguish with, including several dog breeds. Given that the original task has a relationship with our current one, we can leverage this prior experience to classify our 37 pet breeds.</p>
+<p>Nonetheless, this pre-trained model was not build for our task, so we need to adapt it in order to output the pet breed prediction. To do so, we change the last trained layer by a fully connected layer with 37 outputs. At the beginning of the training, the main body of the model is already trained to extract features from images. However, the last bit that we append contains random weights. Therefore, it is convenient to, first, train the last bit for a few epochs before training the whole model at once.</p>
+<p>What we will do is to <em>freeze</em> the model up to the last, recently appended layer. This way, there are no updates in the pre-trained part and the new part is adapted to work with it. Then, we <em>unfreeze</em> the model, allowing the whole thing to keep learning. Nevertheless, without getting into much detail, it is reasonable to think that the first layers of the model require less training that the final ones, provided that they focus on more generic aspects of the image, <a href="https://arxiv.org/pdf/1311.2901.pdf">such as edges or color gradients</a>. Therefore, we will set the learning rate of the initial layers to be lower than the last layers.</p>
+<p>Thus, the main idea is: - Freeze and train last bit at a high learning rate - Unfreeze and train everything together with lower discriminative learning rates</p>
+<p>Fastai has a built in functionality <code>learn.fine_tune</code> that handles the freezing/unfreezing for us, which is what we will be using for the rest of the notebook, after this example.</p>
+</div>
+</div>
+</div>
+<p>Let’s train the model!</p>
+<div id="cell-9" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> vision_learner(dls, resnet34, metrics<span class="op">=</span>error_rate).to_fp16()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>learn.freeze()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">3</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>, pct_start<span class="op">=</span><span class="fl">0.99</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>learn.unfreeze()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">6</span>, lr_max<span class="op">=</span><span class="bu">slice</span>(<span class="fl">5e-6</span>, <span class="fl">5e-4</span>)) <span class="co"># Train first layers 100 times slower than last ones</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">error_rate</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.621868</td>
+<td>1.109150</td>
+<td>0.296346</td>
+<td>00:11</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1.263898</td>
+<td>0.269706</td>
+<td>0.082544</td>
+<td>00:11</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.606038</td>
+<td>0.235287</td>
+<td>0.078484</td>
+<td>00:11</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">error_rate</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.372174</td>
+<td>0.201209</td>
+<td>0.068336</td>
+<td>00:13</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.334736</td>
+<td>0.245479</td>
+<td>0.078484</td>
+<td>00:13</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.273055</td>
+<td>0.197853</td>
+<td>0.062923</td>
+<td>00:13</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>0.178965</td>
+<td>0.169431</td>
+<td>0.054804</td>
+<td>00:13</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>0.148987</td>
+<td>0.167509</td>
+<td>0.058187</td>
+<td>00:13</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>0.112826</td>
+<td>0.166959</td>
+<td>0.056834</td>
+<td>00:14</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>With transfer learning, in less than three minutes of training, we can classify pets into 37 breeds with an error rate of about ~5%. Let’s have a look at some of the images in the validation set with the model predictions.</p>
+<div id="cell-11" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>learn.show_results()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>All the examples are properly classified. In order to better grasp the limitations of the model, we can check the confusion matrix, which will tell us what are the hardest breeds to classify for the model. In the confusion matrix, every row represents the actual label of the image, while the columns indicate the prediction of the model. Thus, a perfect classifier would have a diagonal confusion matrix.</p>
+<div id="cell-13" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>interp <span class="op">=</span> ClassificationInterpretation.from_learner(learn)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>interp.plot_confusion_matrix(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">10</span>), dpi<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The main error comes from the model mixing up some <a href="https://en.wikipedia.org/wiki/American_Pit_Bull_Terrier">American pit bull terriers</a> with <a href="https://en.wikipedia.org/wiki/Staffordshire_Bull_Terrier">Staffordshire bull terriers</a>. There also seems to be some confusion between <a href="https://en.wikipedia.org/wiki/Ragdoll">ragdolls</a> and <a href="https://en.wikipedia.org/wiki/Birman">birmans</a>. A quick google search reveals that we would probably do worse, so we can forgive the model for this mistake :)</p>
+<section id="multi-label-classification" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="multi-label-classification"><span class="header-section-number">2.1</span> Multi-label classification</h2>
+<p>Within image classificaiton we, sometimes, encounter applications in which, rather than assigning a single label to each image, we need to provide a list of labels. This is known as multi-label classification and it is typically applied in situations in which we need to enumerate certain categories that appear in the image.</p>
+<p>I find it pretty intuitive to understand this kind of tasks with the analogy of a kid to whom we ask “what do you see in this image?” and the kid enumerates every single thing it can recognize in it: a tree, a dog, the sun, a lake, grass, a house, etc. Nonetheless, it will not be able to tell us things that it does know yet, such as the brand name of the car, or the name of a constellation in a night sky. In this case, the machine will be our kid and we will tell it exactly which things to identify in the images.</p>
+<p>To provide an example, we use the <a href="http://host.robots.ox.ac.uk/pascal/VOC/">PASCAL</a> dataset. Let’s see how it looks like.</p>
+<div id="cell-16" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> untar_data(URLs.PASCAL_2007)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(path<span class="op">/</span><span class="st">'train.csv'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">fname</th>
+<th data-quarto-table-cell-role="th">labels</th>
+<th data-quarto-table-cell-role="th">is_valid</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>000005.jpg</td>
+<td>chair</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>000007.jpg</td>
+<td>car</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>000009.jpg</td>
+<td>horse person</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>000012.jpg</td>
+<td>car</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>000016.jpg</td>
+<td>bicycle</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We have a list of images with assigned labels and an indicator telling whether the image belongs to the validation set or not. See that the third image has a label ‘horse person’. It is not a centaur, it’s just two labels: horse and person. Let’s have a look at the image.</p>
+<div id="cell-18" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> df.iloc[<span class="dv">2</span>, <span class="dv">0</span>]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> Image.<span class="bu">open</span>(path<span class="op">/</span><span class="st">"train"</span><span class="op">/</span>f)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>img</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Indeed, there is a horse and three people. Notice that the task does not involve recognizing how many elements of a certain category are there. It is quite close to ticking a checkbox list of categories. In this dataset there are 20 categories:</p>
+<div id="cell-20" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> <span class="bu">set</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> L <span class="kw">in</span> df.labels.unique(): labels.update(L.split(<span class="st">' '</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'chair', 'cow', 'aeroplane', 'cat', 'pottedplant', 'person', 'bus', 'diningtable', 'sheep', 'tvmonitor', 'sofa', 'train', 'bird', 'horse', 'dog', 'bottle', 'boat', 'bicycle', 'motorbike', 'car'}</code></pre>
+</div>
+</div>
+<p>Hence, among those, the associated categories to the image are ‘horse’ and ‘person’. Let us have a look at some more examples to get an idea of the kind of images that we encounter.</p>
+<div id="cell-22" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_x(r): <span class="cf">return</span> path<span class="op">/</span><span class="st">'train'</span><span class="op">/</span>r[<span class="st">'fname'</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_y(r): <span class="cf">return</span> r[<span class="st">'labels'</span>].split(<span class="st">' '</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> splitter(df):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    train <span class="op">=</span> df.index[<span class="op">~</span>df[<span class="st">'is_valid'</span>]].tolist()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    valid <span class="op">=</span> df.index[df[<span class="st">'is_valid'</span>]].tolist()</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> train, valid</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>dblock <span class="op">=</span> DataBlock(blocks<span class="op">=</span>(ImageBlock, MultiCategoryBlock),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                   splitter<span class="op">=</span>splitter,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                   get_x<span class="op">=</span>get_x, </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>                   get_y<span class="op">=</span>get_y,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>                   item_tfms <span class="op">=</span> RandomResizedCrop(<span class="dv">128</span>, min_scale<span class="op">=</span><span class="fl">0.35</span>))</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> dblock.dataloaders(df)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Unlike in the previous task, where all images had either dogs or pets as main body, in this case, we encounter a wide range of different images going from close portraits to general landscape views with many different objects in them. Nonetheless, we will do the same as in the previous example: take a pre-trained model and adapt it to this specific task.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Expand to learn about the training procedure
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>In this case, we take a <code>resnet50</code>, which is larger than the previous <code>resnet34</code>. The architecture is also pre-trained in the <a href="http://www.image-net.org/">Imagenet dataset</a> and we fine tune it for this multi-label classification. The output layer now contains 20 neurons indicating whether each category appears in the sample.</p>
+</div>
+</div>
+</div>
+<p>Let’s train!</p>
+<div id="cell-26" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> vision_learner(dls, resnet50, metrics<span class="op">=</span>[accuracy_multi])</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>learn.fine_tune(<span class="dv">3</span>, base_lr<span class="op">=</span><span class="fl">3e-3</span>, freeze_epochs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">accuracy_multi</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.940069</td>
+<td>0.709672</td>
+<td>0.613805</td>
+<td>00:06</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.820035</td>
+<td>0.558362</td>
+<td>0.734721</td>
+<td>00:06</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.598636</td>
+<td>0.201305</td>
+<td>0.949064</td>
+<td>00:06</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>0.356319</td>
+<td>0.124212</td>
+<td>0.957171</td>
+<td>00:06</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">accuracy_multi</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.135804</td>
+<td>0.114497</td>
+<td>0.959801</td>
+<td>00:07</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.117852</td>
+<td>0.107067</td>
+<td>0.962769</td>
+<td>00:07</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.097339</td>
+<td>0.101569</td>
+<td>0.964263</td>
+<td>00:07</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>In less than a minute of training, we are capable of providing all the categories appearing in the given images with an accuracy of ~96%! Let’s have a look at some examples in the validation set.</p>
+<div id="cell-28" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>learn.show_results()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-11-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The model has been quite confused by the fourth image in which it had to predict bicycle and pottedplant and, instead, it predicted chair and diningtable. This was a tricky one. Nonetheless, the model has failed in much simpler ones, e.g., in the hrose image, it has predicted two categories: horse and dog, and, in the last one, it has predicted it to be a train, while it had to say bicycle. Despite the confusion, we can visualize the model failures and understand, for instance, how it confused the last image with a train. Hence, we can see that it works consistently with some room for improvement.</p>
+</section>
+<section id="image-segmentation" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="image-segmentation"><span class="header-section-number">2.2</span> Image segmentation</h2>
+<p>In the image classification tasks that we have tackled so far, we have related classes with whole images, e.g., telling which pet breed appears in an image, or whether it contains any of a bunch of categories like horse and a person. We can go a step further and <em>assign a label to each pixel</em> to identify certain parts of the image. This is known as image segmentation.</p>
+<p>This technique has numerious applications across very distinct fields. For instance, in autonomous driving we have to tell which parts of the image are road, traffic signs, pedestrians, etc. On a completely different approach, in biomedical imaging, segmentation is used to tell appart healthy tissue from regions affected by certain diseases, such as identifying tumorous cells among healthy ones.</p>
+<p>Here we will show a segmentation example using a subset of the <a href="http://www0.cs.ucl.ac.uk/staff/G.Brostow/papers/Brostow_2009-PRL.pdf">CamVid dataset</a> for autonomous driving. Let us have a look at some examples to get a better understanding of the task at hand.</p>
+<div id="cell-30" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> untar_data(URLs.CAMVID_TINY)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> SegmentationDataLoaders.from_label_func(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    path, bs<span class="op">=</span><span class="dv">8</span>, fnames <span class="op">=</span> get_image_files(path<span class="op">/</span><span class="st">"images"</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    label_func <span class="op">=</span> <span class="kw">lambda</span> o: path<span class="op">/</span><span class="st">'labels'</span><span class="op">/</span><span class="ss">f'</span><span class="sc">{</span>o<span class="sc">.</span>stem<span class="sc">}</span><span class="ss">_P</span><span class="sc">{</span>o<span class="sc">.</span>suffix<span class="sc">}</span><span class="ss">'</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    codes <span class="op">=</span> np.loadtxt(path<span class="op">/</span><span class="st">'codes.txt'</span>, dtype<span class="op">=</span><span class="bu">str</span>))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Each pixel in the images is assigned a label indicating whether it is a tree, a traffic sign, a car, a bike, a building, a pedestrian, etc. Here, we see the images overlapped with the color-coded label mask to ease the visualization. The goal is, given an image, generate the color-coding mask, that is, another image. Again, we will leverage a pre-trained model to perform this task.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Expand to learn about the training procedure
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Just as in the previous cases, we take the same pre-trained <code>resnet34</code> and adapt it for our task. In this case, we not only limit ourselves to change the last layer of the network but, also, we also modify its architecture. We use the weights from the pre-trained network and convert it into a <a href="https://arxiv.org/pdf/1505.04597.pdf">U-Net</a> <span class="citation" data-cites="Ronneberger2015unet">(<a href="#ref-Ronneberger2015unet" role="doc-biblioref">Ronneberger, Fischer, and Brox 2015</a>)</span>.</p>
+</div>
+</div>
+</div>
+<p>Let’s train!</p>
+<div id="cell-32" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> unet_learner(dls, resnet34)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>learn.fine_tune(<span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>3.528453</td>
+<td>2.278538</td>
+<td>00:02</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>1.917065</td>
+<td>1.561294</td>
+<td>00:02</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1.638206</td>
+<td>1.185067</td>
+<td>00:02</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>1.489484</td>
+<td>1.176791</td>
+<td>00:02</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>1.446579</td>
+<td>1.413508</td>
+<td>00:02</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>1.363572</td>
+<td>1.037536</td>
+<td>00:02</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>1.251376</td>
+<td>0.994358</td>
+<td>00:02</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>1.151080</td>
+<td>0.793147</td>
+<td>00:02</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>1.053900</td>
+<td>0.740798</td>
+<td>00:02</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>0.969674</td>
+<td>0.706727</td>
+<td>00:02</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>0.896650</td>
+<td>0.705011</td>
+<td>00:02</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>0.833096</td>
+<td>0.699626</td>
+<td>00:02</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>0.780772</td>
+<td>0.693014</td>
+<td>00:02</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>0.738692</td>
+<td>0.689372</td>
+<td>00:02</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Given that the dataset is rather small, the training is ridiculously fast. Here, we do not have a metric, such as error rate, that allows us to get an idea of the overall performance. Therefore, we will ask the model to generate the classification mask for some images and see how it goes in a rather qualitative way.</p>
+<div id="cell-34" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(max_n<span class="op">=</span><span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-14-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>On the left, we see the real color-coding and, on the right, the model prediction. We can see that all the buildings, trees, cars and traffic signs are consistently colored, so the model is doing a great work here. The most difficult part seems to be the identification of road lines as well as accurately defining the shapes. The model has room for improvement and it would certainly perform better with a larger training dataset.</p>
+<p>Beware, though, the model has entirely missed a cyclist in the first image, WATCH OUT!!</p>
+</section>
+</section>
+<section id="image-regression" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Image regression</h1>
+<p>Another big family of applications is image regression tasks. A regression task is characterized by assigning a real number to a sample. Hence, rather than relating labels to the images, the model will have to provide a continuous value. We encounter this kind of tasks in various different fields, for instance, we can infer the temperature of the soil or other atmospherical properties from satelite images or identify the position of certain objects within them.</p>
+<p>To provide an example, we will use the <a href="https://icu.ee.ethz.ch/research/datsets.html">Biwi kinect head pose dataset</a>. The dataset is composed of frames from videos of people in which, in each frame, we have the coordinates of their head center. Let us have a look at a few examples to get a better picture of the task.</p>
+<div id="cell-37" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> untar_data(URLs.BIWI_HEAD_POSE)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>cal <span class="op">=</span> np.genfromtxt(path<span class="op">/</span><span class="st">'01'</span><span class="op">/</span><span class="st">'rgb.cal'</span>, skip_footer<span class="op">=</span><span class="dv">6</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> img2pose(x): <span class="cf">return</span> Path(<span class="ss">f'</span><span class="sc">{</span><span class="bu">str</span>(x)[:<span class="op">-</span><span class="dv">7</span>]<span class="sc">}</span><span class="ss">pose.txt'</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_ctr(f):</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    ctr <span class="op">=</span> np.genfromtxt(img2pose(f), skip_header<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    c1 <span class="op">=</span> ctr[<span class="dv">0</span>] <span class="op">*</span> cal[<span class="dv">0</span>][<span class="dv">0</span>]<span class="op">/</span>ctr[<span class="dv">2</span>] <span class="op">+</span> cal[<span class="dv">0</span>][<span class="dv">2</span>]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    c2 <span class="op">=</span> ctr[<span class="dv">1</span>] <span class="op">*</span> cal[<span class="dv">1</span>][<span class="dv">1</span>]<span class="op">/</span>ctr[<span class="dv">2</span>] <span class="op">+</span> cal[<span class="dv">1</span>][<span class="dv">2</span>]</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> tensor([c1,c2])</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>biwi <span class="op">=</span> DataBlock(blocks<span class="op">=</span>(ImageBlock, PointBlock),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>                 get_items<span class="op">=</span>get_image_files,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>                 get_y<span class="op">=</span>get_ctr,</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>                 splitter<span class="op">=</span>FuncSplitter(<span class="kw">lambda</span> o: o.parent.name<span class="op">==</span><span class="st">'13'</span>),</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>                 batch_tfms<span class="op">=</span>[<span class="op">*</span>aug_transforms(size<span class="op">=</span>(<span class="dv">240</span>,<span class="dv">320</span>)), </span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>                             Normalize.from_stats(<span class="op">*</span>imagenet_stats)])</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> biwi.dataloaders(path)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>dls.show_batch()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Every image is provided with the 2D relative coordinates of the center of the head with respect to the center of the image, which is represented as a red dot. Hence, every image is assigned two continuous values (2D coordinates) between -1 and +1.</p>
+<p>Let’s have a look at the target prediction of a five samples.</p>
+<div id="cell-39" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> dls.one_batch()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(yb[:<span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>TensorPoint([[[-0.1538,  0.2342]],
+
+        [[ 0.4655,  0.0642]],
+
+        [[-0.0802, -0.1196]],
+
+        [[ 0.0862, -0.1651]],
+
+        [[-0.1449,  0.0769]]], device='cuda:0')</code></pre>
+</div>
+</div>
+<p>As in the previous applications, we leverage transfer learning to quickly solve this task.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Expand to learn about the training procedure
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Again, we take a pre-trained <code>resnet34</code>. In this case, provided that the output are two continuous values, there will be two neurons in the output layer. We will restrict the value of each neuron to be within the (-1, 1) range with a <a href="https://en.wikipedia.org/wiki/Sigmoid_function">sigmoid</a> <span class="math inline">\(S(x)\)</span> activation function such that the output <span class="math inline">\(O(x)=S(x)(\text{high}-\text{low})+\text{low}\)</span>. This way, we reduce the amount of things the model needs to learn and prevent it from doing tremenduous mistakes.</p>
+</div>
+</div>
+</div>
+<p>Train hard!</p>
+<div id="cell-41" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> vision_learner(dls, resnet34, y_range<span class="op">=</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>learn.fine_tune(<span class="dv">3</span>, <span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.046086</td>
+<td>0.010338</td>
+<td>00:42</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.007814</td>
+<td>0.002069</td>
+<td>00:56</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.002781</td>
+<td>0.000177</td>
+<td>00:56</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.001354</td>
+<td>0.000255</td>
+<td>00:56</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>With four minutes of training we reach a mean squared error (<code>valid_loss</code>) of <span class="math inline">\(\sim10^{-4}\)</span>, meaning that, on average, the error in the predicted position is of the order of <span class="math inline">\(\sim10^{-2}\)</span>. Since we do not know how bad it is to fail in the second decimal, let’s have a look at some examples in order to see whether it is qualitatively awful or it’s something we can’t even tell.</p>
+<div id="cell-43" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>learn.show_results(nrows<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="applications-cv_files/figure-html/cell-18-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The model does great! Again, on the left, we have the real coordinates and, on the right, we have the prediction. The model error is barely noticeable so, even thogh we could probably refine the model to further lower it, this regressor is perfectly fine to be used within any related application. For instance, this could be used to detect the movement of a player in front of a camera in a virtual reality game.</p>
+</section>
+<section id="other-computer-vision-applications" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Other computer vision applications</h1>
+<p>There is a myriad of different possible tasks in computer vision. Here, we just cover a few representative tasks which are, indeed, the foundation for more complex ones.</p>
+<p>For example, the last image regression example can be turned into an object detection task to find people’s heads. We can add a bounding box prediction around the dot and we’re good to go! A classification task variant would be to assess whether two images belong to the same class, regardless of the class. Thus, in practice, this becomes a binary classification task and it is typically handled with <a href="https://en.wikipedia.org/wiki/Siamese_neural_network">siamese neural networks</a>.</p>
+<p>Other prominent applications are generative tasks. These consist on generating new images and, by new, we mean that they did not exist ever before. This can either consist on modifying images, such as instagram and tiktok filters or <a href="https://en.wikipedia.org/wiki/Deepfake">deepfakes</a>, or generating them from scratch such as <a href="https://thispersondoesnotexist.com/">these people</a> or <a href="https://thiscatdoesnotexist.com/">these cute cats</a>. We dive deeper into generative tasks in the next notebook about natural language processing.</p>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-fastai" class="csl-entry" role="listitem">
+Howard, Jeremy, and Sylvain Gugger. 2020. <span>“Fastai: A Layered API for Deep Learning.”</span> <em>Information</em> 11 (2). <a href="https://doi.org/10.3390/info11020108">https://doi.org/10.3390/info11020108</a>.
+</div>
+<div id="ref-Poplin2018NatBiomedEng" class="csl-entry" role="listitem">
+Poplin, Ryan, Avinash V. Varadarajan, Katy Blumer, Yun Liu, Michael V. McConnell, Greg S. Corrado, Lily Peng, and Dale R. Webster. 2018. <span>“<span class="nocase">Prediction of cardiovascular risk factors from retinal fundus photographs via deep learning</span>.”</span> <em>Nat. Biomed. Eng.</em> 2 (March): 158–64. <a href="https://doi.org/10.1038/s41551-018-0195-0">https://doi.org/10.1038/s41551-018-0195-0</a>.
+</div>
+<div id="ref-Ronneberger2015unet" class="csl-entry" role="listitem">
+Ronneberger, Olaf, Philipp Fischer, and Thomas Brox. 2015. <span>“U-Net: Convolutional Networks for Biomedical Image Segmentation.”</span> In <em>Medical Image Computing and Computer-Assisted Intervention – MICCAI 2015</em>, edited by Nassir Navab, Joachim Hornegger, William M. Wells, and Alejandro F. Frangi, 234–41. Cham: Springer International Publishing.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/BorjaRequena\.github\.io\/Neural-Network-Course");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/applications/applications-cv.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>
