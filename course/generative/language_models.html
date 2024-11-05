@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Borja Requena">
+<meta name="description" content="Perfect to automatize your job">
+
+<title>Language models – lectures_ml</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Language models – lectures_ml">
+<meta property="og:description" content="Perfect to automatize your job">
+<meta property="og:site_name" content="lectures_ml">
+<meta name="twitter:title" content="Language models – lectures_ml">
+<meta name="twitter:description" content="Perfect to automatize your job">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lectures_ml</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/Neural-Network-Course"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../../course/generative/introduction.html">Generative models</a></li><li class="breadcrumb-item"><a href="../../course/generative/language_models.html">Language models</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction to Machine Learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linear models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linear regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/polynomial_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Polynomial fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/linear_models/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Perceptron</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/probabilistic_view.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A probabilistic view on machine learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../course/applications/applications-index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Machine learning application overview</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in computer vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-nlp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in natural language processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/applications/applications-tabular.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks with structured data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Fundamentals of deep learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/neural_networks_from_scratch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/pytorch_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks with PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/automatic_differentiation_pytorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automatic differentiation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/multiclass_classification_problem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiclass classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/deep_learning/regularization_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural Networks regularization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/montecarlo_integration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo Integration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/rbm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Restricted Boltzmann Machines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Generative models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/generative/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/generative/language_models.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Language models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Automatic differentiation for quantum computing</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/quantum/qaoa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quantum Approximate Optimization Algorithm (QAOA) from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course/quantum/vqe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Variational Quantum Eigensolver (VQE) from scratch</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../homeworks/index_homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Homework</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1 - Regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2 - Perceptron</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/generative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3 - Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/ml_physics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4 - ML techniques in physics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../homeworks/paper_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Paper report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Library</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/data_gen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Generation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/losses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Loss functions and gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lib_nbs/optimizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimizers</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#language-models" id="toc-language-models" class="nav-link active" data-scroll-target="#language-models"><span class="header-section-number">1</span> Language models</a>
+  <ul class="collapse">
+  <li><a href="#example-task" id="toc-example-task" class="nav-link" data-scroll-target="#example-task"><span class="header-section-number">1.1</span> Example task</a></li>
+  <li><a href="#giving-numerical-meaning-to-text" id="toc-giving-numerical-meaning-to-text" class="nav-link" data-scroll-target="#giving-numerical-meaning-to-text"><span class="header-section-number">1.2</span> Giving numerical meaning to text</a></li>
+  <li><a href="#learning-the-data-probability-distribution" id="toc-learning-the-data-probability-distribution" class="nav-link" data-scroll-target="#learning-the-data-probability-distribution"><span class="header-section-number">1.3</span> Learning the data probability distribution</a></li>
+  </ul></li>
+  <li><a href="#baseline-bigram-language-model" id="toc-baseline-bigram-language-model" class="nav-link" data-scroll-target="#baseline-bigram-language-model"><span class="header-section-number">2</span> Baseline: bigram language model</a>
+  <ul class="collapse">
+  <li><a href="#data-processing" id="toc-data-processing" class="nav-link" data-scroll-target="#data-processing"><span class="header-section-number">2.1</span> Data processing</a></li>
+  <li><a href="#model-definition" id="toc-model-definition" class="nav-link" data-scroll-target="#model-definition"><span class="header-section-number">2.2</span> Model definition</a></li>
+  <li><a href="#training-loop" id="toc-training-loop" class="nav-link" data-scroll-target="#training-loop"><span class="header-section-number">2.3</span> Training loop</a></li>
+  </ul></li>
+  <li><a href="#gpt" id="toc-gpt" class="nav-link" data-scroll-target="#gpt"><span class="header-section-number">3</span> GPT</a>
+  <ul class="collapse">
+  <li><a href="#transformer" id="toc-transformer" class="nav-link" data-scroll-target="#transformer"><span class="header-section-number">3.1</span> Transformer</a></li>
+  <li><a href="#causal-self-attention" id="toc-causal-self-attention" class="nav-link" data-scroll-target="#causal-self-attention"><span class="header-section-number">3.2</span> Causal self-attention</a></li>
+  <li><a href="#positional-encoding" id="toc-positional-encoding" class="nav-link" data-scroll-target="#positional-encoding"><span class="header-section-number">3.3</span> Positional encoding</a></li>
+  <li><a href="#multi-head-attention" id="toc-multi-head-attention" class="nav-link" data-scroll-target="#multi-head-attention"><span class="header-section-number">3.4</span> Multi-head attention</a></li>
+  <li><a href="#feedforward" id="toc-feedforward" class="nav-link" data-scroll-target="#feedforward"><span class="header-section-number">3.5</span> Feedforward</a></li>
+  <li><a href="#decoder-block" id="toc-decoder-block" class="nav-link" data-scroll-target="#decoder-block"><span class="header-section-number">3.6</span> Decoder block</a></li>
+  <li><a href="#go-big-or-go-home" id="toc-go-big-or-go-home" class="nav-link" data-scroll-target="#go-big-or-go-home"><span class="header-section-number">3.7</span> Go big or go home</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/generative/language_models.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../../course/generative/introduction.html">Generative models</a></li><li class="breadcrumb-item"><a href="../../course/generative/language_models.html">Language models</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Language models</h1>
+</div>
+
+<div>
+  <div class="description">
+    Perfect to automatize your job
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Borja Requena </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p><a href="https://githubtocolab.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/generative/language_models.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab"></a></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The content of this lecture has been adapted from Borja’s <a href="https://borjarequena.github.io/GPTutorial/">GPTutorial</a>.</p>
+</div>
+</div>
+<section id="language-models" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Language models</h1>
+<p>Language models are generative models that write text as us (humans) would do it. Current advances in language modeling, such as <a href="https://openai.com/blog/chatgpt/">ChatGPT</a>, are definitely on par with humans (honestly, we set the bar quite low). See this cool example from early 2023 in <a href="#fig-chatgpt" class="quarto-xref">Figure&nbsp;1</a>:</p>
+<div id="fig-chatgpt" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-chatgpt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../../figures/chatgpt_impressive.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-chatgpt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Sample conversation with ChatGPT.
+</figcaption>
+</figure>
+</div>
+<p>The most common approach to generate sequential data, is to recursively predict the following item. In the case of language modeling, we could take a piece of text as starting point and use our model to predict the next word. Appending the predicted word to the existing text, and feeding it to the model again, we could predict the following word. Following this procedure, we could write any arbitrary amount of text!</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>While the procedure may seem simple, language is very complex and writing coherent text is quite a challenge. Even though we may write text sequentially, the relationships between elements within the text can be intrincate with forward and backwards dependencies that can be an entire book apart.</p>
+</div>
+</div>
+<p>There are several considerations we need to take into account. For example, how to “process text” with a machine learning model that operates purely with mathematical operations.</p>
+<section id="example-task" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="example-task"><span class="header-section-number">1.1</span> Example task</h2>
+<p>We will introduce language models with an example task of training a model to count numbers “1,2,3,4,…,8765,8766,8767,…”. This seems like a rather simple task that could be easily achieved numerically with a single line of code. However, we will consider the digits as strings that conform sentences.</p>
+<p>This toy example will allow us to understand the main concepts behind language models. We will use it as a running example and implement the main ideas as we see them.</p>
+<p>Here, we will build our data set, which is nothing more than a text document containing the numbers.</p>
+<div id="cell-5" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>max_num <span class="op">=</span> <span class="dv">1_000_000</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">","</span>.join([<span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(max_num)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s see the first and last few digits of our data set.</p>
+<div id="cell-7" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(text[:<span class="dv">20</span>])</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(text[<span class="op">-</span><span class="dv">20</span>:])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>0,1,2,3,4,5,6,7,8,9,
+999997,999998,999999</code></pre>
+</div>
+</div>
+</section>
+<section id="giving-numerical-meaning-to-text" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="giving-numerical-meaning-to-text"><span class="header-section-number">1.2</span> Giving numerical meaning to text</h2>
+<p>We can communicate very deep concepts with words, but how does a machine <em>understand</em> them?</p>
+<p>When we work with text, we split it into elementary pieces called <strong>tokens</strong>. This is known as tokenization and there is quite a lot of freedom on how to do it. For example, we can take from full sentences, to words, to single characters. The most common practice is to use sub-word tokens that are between single characters to full words, such as <a href="https://github.com/google/sentencepiece">SentencePiece</a>. We can also have special tokens to account for additional grammatical information. For example, we can use special tokens to indicate the beggining and ending of a sequence, or to indicate that the words start with capital letters.</p>
+<p>Let’s see a simple tokenization example. We would take the following sentence:</p>
+<pre><code>My cat won't stop purring.</code></pre>
+<p>And transform it into the tokens:</p>
+<pre><code>&lt;BoS&gt;&lt;x_maj&gt;&lt;my&gt; &lt;cat&gt; &lt;wo&gt;&lt;n't&gt; &lt;stop&gt; &lt;purr&gt;&lt;ing&gt;&lt;.&gt;&lt;EoS&gt;</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I just made up this tokenization, this is just to provide an idea.</p>
+</div>
+</div>
+<p>With this, we define a <em>vocabulary</em> of tokens. To provide them with “meaning”, we assign a trainable parameter vector to each of them, which are known as <strong>embedding vectors</strong>. The larger the embedding, the richer the information we can associate to every individual token. We typically store these vectors in a so-called <strong>embedding matrix</strong>, where every row provides the associated embedding vector to a token. This way, we identify the tokens by an integer index that corresponds to their row in the embedding matrix.</p>
+<p>Taking long tokens results into large vocabularies and, therefore, we need more memory. However, we can generate a piece of text with just a few inference steps. Conversely, short tokens require much less memory at the cost of more inference steps to write. Thus, this presents a trade-off between memory and computational time. You can get some intuition about it by comparing the number of letters in the alphabet (shortest possible tokens) with the number of entries in a dictionary (every word is a token).</p>
+<p>To process a piece of text, we first split it into the tokens of our vocabulary (tokenization), and replace the tokens by their corresponding indices (numericalization).</p>
+<p>Let’s see how this works in our example task. First of all, we build the token vocabulary. In this simple case, every digit is a token together with the separator “,”.</p>
+<div id="cell-9" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>vocab <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">list</span>(<span class="bu">set</span>(text)))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>vocab_size <span class="op">=</span> <span class="bu">len</span>(vocab)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>vocab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']</code></pre>
+</div>
+</div>
+<p>Now we can build a <code>Tokenizer</code> class to encode raw text into tokens, and decode tokens to actual text.</p>
+<div id="cell-11" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Tokenizer:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, vocab):</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.s2i <span class="op">=</span> {char: i <span class="cf">for</span> i, char <span class="kw">in</span> <span class="bu">enumerate</span>(vocab)}</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.i2s <span class="op">=</span> {i: char <span class="cf">for</span> char, i <span class="kw">in</span> <span class="va">self</span>.s2i.items()}</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> encode(<span class="va">self</span>, string):</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">"Tokenize an input string"</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [<span class="va">self</span>.s2i[char] <span class="cf">for</span> char <span class="kw">in</span> string]</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> decode(<span class="va">self</span>, ints):</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="co">"Transform a list of integers to a string of characters"</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">''</span>.join([<span class="va">self</span>.i2s[i] <span class="cf">for</span> i <span class="kw">in</span> ints])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-12" class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tkn <span class="op">=</span> Tokenizer(vocab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s see the map from tokens to integer.</p>
+<div id="cell-14" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>tkn.s2i</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{',': 0,
+ '0': 1,
+ '1': 2,
+ '2': 3,
+ '3': 4,
+ '4': 5,
+ '5': 6,
+ '6': 7,
+ '7': 8,
+ '8': 9,
+ '9': 10}</code></pre>
+</div>
+</div>
+<p>We can try our tokenizer with a text example.</p>
+<div id="cell-16" class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pre_tkn <span class="op">=</span> text[:<span class="dv">10</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>pre_tkn, tkn.encode(pre_tkn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>('0,1,2,3,4,', [1, 0, 2, 0, 3, 0, 4, 0, 5, 0])</code></pre>
+</div>
+</div>
+<p>We can also test the decoding function by encoding and decoding.</p>
+<div id="cell-18" class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>tkn.decode(tkn.encode(pre_tkn))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'0,1,2,3,4,'</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here we only perform the text pre-processing. The embedding belongs to the machine learning model.</p>
+</div>
+</div>
+</section>
+<section id="learning-the-data-probability-distribution" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="learning-the-data-probability-distribution"><span class="header-section-number">1.3</span> Learning the data probability distribution</h2>
+<p>To learn how to generate text, we need to learn the underlying distribution of the data we wish to replicate <span class="math inline">\(p_{\text{data}}(\mathbf{x})\)</span>. We model text as a sequence of tokens <span class="math inline">\(\mathbf{x}=\left[x_1, x_2, \dots, x_{T-1}\right]\)</span>, and the goal is to predict the next token <span class="math inline">\(x_T\)</span>. This way, we can recursively generate text:</p>
+<ol type="1">
+<li>We start with some initial context <span class="math inline">\(x_1, x_2, \dots, x_{T-1}\)</span>.</li>
+<li>We predict the next token <span class="math inline">\(x_T\)</span>, given the context.</li>
+<li>We append the prediction to the existing text and repeat the process taking <span class="math inline">\(x_1,\dots,x_T\)</span> as context.</li>
+</ol>
+<p>We typically do this defining a parametrized model to approximate the probability distribution, <span class="math inline">\(p_\theta(\mathbf{x})\approx p_{\text{data}}(\mathbf{x})\)</span>. The parameters <span class="math inline">\(\theta\)</span> can represent from the weights of a neural network, to the coefficients of a gaussian mixture model.</p>
+<p>A standard technique in the machine learning field is to use the chain rule of probability to model sequential data. This way, the probability to observe a sequence of tokens can be described as <span class="math display">\[p_{\theta}(\mathbf{x})=p_\theta(x_1)\prod_{t=2}^{T}p_\theta(x_t|x_1\dots x_{t-1})\,.\]</span></p>
+<p>We optimize our model parameters to obtain the <strong>maximum likelihood estimator</strong>, which is the most statistically efficient estimator. In this tutorial, we do not want to dive too deep in the details. The main intuition behind it is that we try to maximize the likelihood of observing the training data under our parametrized model. As such, we wish to minimize the negative log-likelihood loss or cross-entropy loss: <span class="math display">\[\theta^* = \text{arg}\,\text{min}_\theta - \frac{1}{N}\sum_{i=1}^N \log p_\theta\left(\mathbf{x}^{(i)}\right) = \text{arg}\,\text{min}_\theta - \frac{1}{N}\sum_{i=1}^N\sum_{t=1}^T \log p_\theta\left(x_t^{(i)}|x_{&lt;t}^{(i)}\right)\]</span></p>
+<p>We can understand the task as a classification problem at every time-step where the goal is to predict the token that follows. Thus, we can build our self-supervised classification task by simply taking the text shifted by one position as target for our prediction. For example, consider the tokenized sentence</p>
+<pre><code>&lt;this&gt; &lt;language&gt; &lt;model&gt; &lt;rocks&gt;&lt;!&gt;</code></pre>
+<p>Given the tokens</p>
+<pre><code>&lt;this&gt; &lt;language&gt;</code></pre>
+<p>we wish to predict</p>
+<pre><code>&lt;model&gt;</code></pre>
+<p>among all the tokens in the vocabulary.</p>
+<p>As we typically do in machine learning, we find the optimal parameters <span class="math inline">\(\theta^*\)</span>, i.e., train our model, with gradient-based optimization.</p>
+</section>
+</section>
+<section id="baseline-bigram-language-model" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Baseline: bigram language model</h1>
+<p>Let’s create a very simple baseline language model. This will allow us to see how the embedding matrix works and the training loop details in pytorch.</p>
+<section id="data-processing" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="data-processing"><span class="header-section-number">2.1</span> Data processing</h2>
+<p>First of all, we need to properly arrange our data. We will start by tokenizing the whole text piece.</p>
+<div id="cell-22" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> torch.tensor(tkn.encode(text))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>data[:<span class="dv">20</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([ 1,  0,  2,  0,  3,  0,  4,  0,  5,  0,  6,  0,  7,  0,  8,  0,  9,  0,
+        10,  0])</code></pre>
+</div>
+</div>
+<p>Now we need to save a part of the data for validation and keep the rest for training. In generative models, we do not tend to use too much data for validation because it is just to get a rough idea of how it is working. In the end, we will evaluate the performance ourselves asking the model to generate samples.</p>
+<p>To keep this simple, we will save the last numbers as validation data.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Given the nature of our data, it would be best to save chunks of the data sampled at different points along the whole text piece.</p>
+</div>
+</div>
+<div id="cell-24" class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>val_pct <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>split_idx <span class="op">=</span> <span class="bu">int</span>(<span class="bu">len</span>(data)<span class="op">*</span>val_pct)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>data_train <span class="op">=</span> data[:<span class="op">-</span>split_idx]</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>data_val <span class="op">=</span> data[<span class="op">-</span>split_idx:]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-25" class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>data_train.shape, data_val.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([6200001]), torch.Size([688888]))</code></pre>
+</div>
+</div>
+<p>To train machine learning models, we take advantage of parallelization to process several samples at once. To do so, we will split the text in sub-sequences from which we will build our training batches.</p>
+<div id="cell-27" class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_batch(data, batch_size, seq_len):</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> torch.randint(<span class="bu">len</span>(data)<span class="op">-</span>seq_len, (batch_size,))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> torch.stack([data[i:i<span class="op">+</span>seq_len] <span class="cf">for</span> i <span class="kw">in</span> idx])</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> torch.stack([data[i:i<span class="op">+</span>seq_len] <span class="cf">for</span> i <span class="kw">in</span> idx<span class="op">+</span><span class="dv">1</span>])</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x.to(device), y.to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-28" class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>batch_size <span class="op">=</span> <span class="dv">64</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>seq_len <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> get_batch(data_train, batch_size, seq_len)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-29" class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>xb.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>torch.Size([64, 8])</code></pre>
+</div>
+</div>
+<div id="cell-30" class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>xb[<span class="dv">0</span>], yb[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([ 3,  0,  8,  8, 10,  1,  2,  4], device='cuda:0'),
+ tensor([ 0,  8,  8, 10,  1,  2,  4,  0], device='cuda:0'))</code></pre>
+</div>
+</div>
+</section>
+<section id="model-definition" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="model-definition"><span class="header-section-number">2.2</span> Model definition</h2>
+<p>We will make a bigram model that predicts the following character based on the previous one. These models are stochastic and, therefore, the output of the model is a probability distribution over our vocabulary. We can easily achieve this by making the embedding size as large as the vocabulary. This way, when we index into the embedding matrix with a token, we immediately obtain the probability distribution over the possible next tokens.</p>
+<div id="cell-32" class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> BigramLanguageModel(nn.Module):</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Language model that predicts text based on the previous character."</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, vocab_size):</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding <span class="op">=</span> nn.Embedding(vocab_size, vocab_size)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>        logits <span class="op">=</span> <span class="va">self</span>.embedding(x)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> logits</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">@torch.no_grad</span>()</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> generate(<span class="va">self</span>, x, new_tkn):</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(new_tkn):</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> <span class="va">self</span>(x)</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> logits[:, <span class="op">-</span><span class="dv">1</span>, :]</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>            probs <span class="op">=</span> F.softmax(logits, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>            new_tkn <span class="op">=</span> torch.multinomial(probs, <span class="dv">1</span>)</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> torch.cat((x, new_tkn), dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-33" class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>bigram_model <span class="op">=</span> BigramLanguageModel(vocab_size).to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-34" class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>xb.shape, bigram_model(xb).shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([64, 8]), torch.Size([64, 8, 11]))</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>logits</code> we define here are the unnormalized probability scores for each token. To transform them in a normalized probability distribution, we use a <a href="https://es.wikipedia.org/wiki/Funci%C3%B3n_SoftMax">SoftMax</a> function. We will see below that pytorch takes the logits directly to compute the loss function instead of the probabilities.</p>
+</div>
+</div>
+<p>Let’s try generating some text with our model.</p>
+<div id="cell-36" class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.zeros((<span class="dv">1</span>, <span class="dv">1</span>), dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>tkn.decode(bigram_model.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>',,779031473,20590,877'</code></pre>
+</div>
+</div>
+</section>
+<section id="training-loop" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="training-loop"><span class="header-section-number">2.3</span> Training loop</h2>
+<p>With the data and the model, we’re almost ready to do the training. We need to define a loss function and an optimiziation algorithm to update our model parameters.</p>
+<p>As we have mentioned before, we wish to minimize the negative log-likelihood of the data with respect to the model. To do so, we use pytorch’s <a href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html#torch.nn.CrossEntropyLoss">cross entropy loss</a>.</p>
+<div id="cell-38" class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cross_entropy_loss(logits, targets):</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Cross entropy loss flattening tensors"</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    BS, T, H <span class="op">=</span> logits.shape</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> F.cross_entropy(logits.view(BS<span class="op">*</span>T, H), targets.view(<span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> loss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then, as optimizer, we will use <a href="https://arxiv.org/abs/1412.6980">Adam</a>.</p>
+<div id="cell-40" class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> torch.optim.AdamW(bigram_model.parameters(), lr<span class="op">=</span><span class="fl">1e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s define the training loop.</p>
+<div id="cell-42" class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>batch_size <span class="op">=</span> <span class="dv">32</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>seq_len <span class="op">=</span> <span class="dv">24</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>train_steps <span class="op">=</span> <span class="dv">3000</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(train_steps):</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    xb, yb <span class="op">=</span> get_batch(data_train, batch_size, seq_len)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    optimizer.zero_grad()</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    logits <span class="op">=</span> bigram_model(xb)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> cross_entropy_loss(logits, yb)</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>    loss.backward()</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    optimizer.step()</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(loss.item())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2.370857000350952</code></pre>
+</div>
+</div>
+<p>We will plug this into a function for later usage and estimate the loss on the validation set.</p>
+<div id="cell-44" class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_model(steps, model, lr, batch_sz, seq_len):</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> torch.optim.AdamW(model.parameters(), lr<span class="op">=</span>lr)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(steps):</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>        xb, yb <span class="op">=</span> get_batch(data_train, batch_sz, seq_len)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>        logits <span class="op">=</span> model(xb)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> cross_entropy_loss(logits, yb)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">%</span> <span class="dv">200</span> <span class="op">==</span> <span class="dv">0</span> <span class="kw">or</span> i <span class="op">==</span> steps <span class="op">-</span> <span class="dv">1</span>:</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>            losses <span class="op">=</span> estimate_loss(model, batch_sz, seq_len)</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Step </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: train loss </span><span class="sc">{</span>losses[<span class="st">'train'</span>]<span class="sc">:.4f}</span><span class="ss">, val loss </span><span class="sc">{</span>losses[<span class="st">'val'</span>]<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> model</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="at">@torch.no_grad</span>()</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_loss(model, batch_sz, seq_len, eval_iters<span class="op">=</span><span class="dv">50</span>):</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Estimate losses for train and validation data sets.</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co">    Adapted from https://github.com/karpathy/nanoGPT"""</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> {}</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>    model.<span class="bu">eval</span>()</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> split <span class="kw">in</span> [<span class="st">'train'</span>, <span class="st">'val'</span>]:</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>        losses <span class="op">=</span> torch.zeros(eval_iters)</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(eval_iters):</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>            X, Y <span class="op">=</span> get_batch(data_train <span class="cf">if</span> split <span class="op">==</span> <span class="st">'train'</span> <span class="cf">else</span> data_val,</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>                             batch_sz, seq_len)</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> model(X)</span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>            loss <span class="op">=</span> cross_entropy_loss(logits, Y)</span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>            losses[k] <span class="op">=</span> loss.item()</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>        out[split] <span class="op">=</span> losses.mean()</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>    model.train()</span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> out</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Bigram models can’t accomplish this example task. After every digit, all the other digits are equally likely to happen if we do not consider any further context. This model can only take advantage of the separator <code>,</code>. For instance, we know there will not be two consecutive separators and that the following number won’t start with <code>0</code>.</p>
+<p>We can see this in the first row of the embedding matrix.</p>
+<div id="cell-46" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>embedding_matrix <span class="op">=</span> <span class="bu">list</span>(bigram_model.parameters())[<span class="dv">0</span>] </span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>embedding_matrix.softmax(<span class="op">-</span><span class="dv">1</span>)[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([0.0007, 0.0007, 0.1393, 0.0884, 0.1212, 0.1808, 0.1448, 0.1381, 0.0857,
+        0.0989, 0.0012], device='cuda:0', grad_fn=&lt;SelectBackward0&gt;)</code></pre>
+</div>
+</div>
+<p>Let’s generate some text.</p>
+<div id="cell-48" class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.zeros((<span class="dv">1</span>, <span class="dv">1</span>), dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>tkn.decode(bigram_model.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>',69,475,8423,1207856,'</code></pre>
+</div>
+</div>
+<p>In contrast to the previous example, we see the model has learned to not add consecutive separators, but the digits are still random. GPT time!</p>
+</section>
+</section>
+<section id="gpt" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> GPT</h1>
+<p>Let’s prepare a more advanced machine learning model that overcomes the limitations of our baseline. With the bigram model, the prediction of the next token only depends on the last token in our text corpus. Thus, the model works with very limited information about the context, and it would be much more beneficial to account for further past instances.</p>
+<p>The extreme opposite case would be to account for all the previous existing text. This can be both overkill and unfeasible in terms of memory. For example, writing a book, we may not need to account for the whole thing to write the last sentence. Therefore, in modern architectures, we fix a maximum sequence length that we keep in memory to provide context for our prediction.</p>
+<section id="transformer" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="transformer"><span class="header-section-number">3.1</span> Transformer</h2>
+<p>The architecture behind the <a href="https://openai.com/blog/better-language-models/">GPT language models</a> is based on the transformer, depicted in <a href="#fig-transformer" class="quarto-xref">Figure&nbsp;2</a>.</p>
+<div id="fig-transformer" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-transformer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../../figures/transformer.png" class="img-fluid figure-img" style="width:60.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-transformer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Transformer schematic representation.
+</figcaption>
+</figure>
+</div>
+<p>The transformer was introduced as an architecture for translation tasks with two main parts: the encoder (left) and the decoder (right). The decoder is the responsible part for generating the translated text and, thus, it is the language model bit of the whole architecture.</p>
+<p>The transformer architecture relies heavily on self-attention mechanisms. Indeed, the original paper is called “<a href="https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html">Attention is all you need</a>”. Unlike the bigram model, the transformer decoder can account for all the possible relationships between tokens in the past text to generate the new tokens.</p>
+</section>
+<section id="causal-self-attention" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="causal-self-attention"><span class="header-section-number">3.2</span> Causal self-attention</h2>
+<p>The key element in the transformer architecture is the self-attention layer. This allows our tokens in our text piece to “communicate with each other” in a fixed way:</p>
+<ul>
+<li>For every token, we compute three quantities: a key <span class="math inline">\(\mathbf{k}\)</span>, a query <span class="math inline">\(\mathbf{q}\)</span> and a value <span class="math inline">\(\mathbf{v}\)</span>.</li>
+<li>Then, tokens compare their query to the other tokens’ keys.</li>
+<li>The resulting value for each token is the weighted average of all the values according to the query-key similarity.</li>
+</ul>
+<p>We compute the similarity between keys and queries doing the dot product between the vectors. Then, to ensure the similarity weights are normalized, we apply the softmax activation function to all the dot products of the query of interest with all the keys. We can efficiently compute all of these with matrix multiplications: <span class="math display">\[\text{Attention}(Q,K,V) = \text{SoftMax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\,\]</span> where <span class="math inline">\(Q,K,V\)</span> are the matrices containing the query, key and value vectors of every token in the text as rows. <span class="math inline">\(d_k\)</span> denotes the size of the key vector, and the normalization ensures the model is numerically stable. Without this normalization, even if <span class="math inline">\(Q\)</span> and <span class="math inline">\(K\)</span> have unit variance, the variance of their product is of the order of the head size <span class="math inline">\(d_k\)</span>.</p>
+<p>So far, we have not mentioned how to get the queries, keys and values from our tokens. We can choose any differentiable function. In the GPT architecture, they use a dense linear layer.</p>
+<div id="cell-52" class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AttentionHead(nn.Module):</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Self-attention head."</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, emb_sz, head_sz):</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.key <span class="op">=</span> nn.Linear(emb_sz, head_sz, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.query <span class="op">=</span> nn.Linear(emb_sz, head_sz, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.value <span class="op">=</span> nn.Linear(emb_sz, head_sz, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>        q <span class="op">=</span> <span class="va">self</span>.query(x) <span class="co"># (BS, T, H)</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>        k <span class="op">=</span> <span class="va">self</span>.key(x)</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>        v <span class="op">=</span> <span class="va">self</span>.value(x)</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>        w <span class="op">=</span> q <span class="op">@</span> k.transpose(<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>) <span class="op">*</span> k.shape[<span class="op">-</span><span class="dv">1</span>]<span class="op">**</span>(<span class="op">-</span><span class="fl">0.5</span>) <span class="co"># (BS, T, T)</span></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> w.softmax(<span class="op">-</span><span class="dv">1</span>) <span class="op">@</span> v <span class="co"># (BS, T, H)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This attention mechanism on its own, allows all the tokens to “see” each other at all times. This is what we would see in the transformer encoder, as all the source text in a translation task already exists. However, the transformer decoder can only attend to text as it is being generated. This means that, while we train it, we need to ensure that tokens cannot attend to what would be future innexistent ones.</p>
+<p>This seems obvious because, at inference time, we clearly only have the text that is already generated. Nonetheless, during training, we sample full sequence chunks of a fixed sequence length. We can take the maximum advantage of this by training our model to generate new tokens for all the possible contexts available in this chunk, from a single initial token to all.</p>
+<div id="cell-54" class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>batch_size, seq_len <span class="op">=</span> <span class="dv">1</span>, <span class="dv">8</span> </span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>xb, yb <span class="op">=</span> get_batch(data_train, batch_size, seq_len)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-55" class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CausalAttentionHead(nn.Module):</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Masked self-attention head."</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, emb_sz, head_sz, seq_len, dropout<span class="op">=</span><span class="fl">0.2</span>):</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.key <span class="op">=</span> nn.Linear(emb_sz, head_sz, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.query <span class="op">=</span> nn.Linear(emb_sz, head_sz, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.value <span class="op">=</span> nn.Linear(emb_sz, head_sz, bias<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.register_buffer(<span class="st">'mask'</span>, torch.tril(torch.ones(seq_len, seq_len)))</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dropout <span class="op">=</span> nn.Dropout(dropout)</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>        q <span class="op">=</span> <span class="va">self</span>.query(x) <span class="co"># (BS, T, H)</span></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>        k <span class="op">=</span> <span class="va">self</span>.key(x)</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>        v <span class="op">=</span> <span class="va">self</span>.value(x)</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>        _, T, _ <span class="op">=</span> x.shape</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>        w <span class="op">=</span> q <span class="op">@</span> k.transpose(<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>) <span class="op">*</span> k.shape[<span class="op">-</span><span class="dv">1</span>]<span class="op">**</span>(<span class="op">-</span><span class="fl">0.5</span>)    <span class="co"># (BS, T, T)</span></span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>        w <span class="op">=</span> w.masked_fill(<span class="va">self</span>.mask[:T, :T] <span class="op">==</span> <span class="dv">0</span>, <span class="bu">float</span>(<span class="st">'-inf'</span>))</span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.dropout(w.softmax(<span class="op">-</span><span class="dv">1</span>)) <span class="op">@</span> v <span class="co"># (BS, T, H)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This implementation works well. However, pytorch provides a <code>torch.nn.functional.scaled_dot_product_attention</code> that uses specialized CUDA kernels.</p>
+</div>
+</div>
+<p>Now that we have implemented the self-attention attention mechanism, let’s make a first version of our GPT model. The model will have an embedding, an attention layer and a fully connected layer.</p>
+<div id="cell-57" class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPT(nn.Module):</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"GPT-like model"</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, vocab_sz, emb_sz, head_sz, seq_len):</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.seq_len <span class="op">=</span> seq_len</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding <span class="op">=</span> nn.Embedding(vocab_sz, emb_sz)</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.attn <span class="op">=</span> CausalAttentionHead(emb_sz, head_sz, seq_len)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.linear <span class="op">=</span> nn.Linear(head_sz, vocab_sz)</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.embedding(x)</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.attn(x)</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.linear(x)</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">@torch.no_grad</span>()</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> generate(<span class="va">self</span>, x, new_tkn):</span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(new_tkn):</span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>            context <span class="op">=</span> x[:, <span class="op">-</span><span class="va">self</span>.seq_len:]</span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> <span class="va">self</span>(context)</span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> logits[:, <span class="op">-</span><span class="dv">1</span>, :]</span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>            probs <span class="op">=</span> F.softmax(logits, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>            new_tkn <span class="op">=</span> torch.multinomial(probs, <span class="dv">1</span>)</span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> torch.cat((x, new_tkn), dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-58" class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">7</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>batch_size, seq_len <span class="op">=</span> <span class="dv">64</span>, <span class="dv">60</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>emb_sz, head_sz <span class="op">=</span> <span class="dv">16</span>, <span class="dv">16</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> GPT(vocab_size, emb_sz, head_sz, seq_len).to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-59" class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>train_model(<span class="dv">400</span>, gpt, <span class="fl">1e-3</span>, batch_size, seq_len)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Step 0: train loss 2.4356, val loss 2.4098
+Step 200: train loss 2.2399, val loss 2.3747
+Step 399: train loss 2.2106, val loss 2.3604</code></pre>
+</div>
+</div>
+<div id="cell-60" class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.zeros((<span class="dv">1</span>, <span class="dv">1</span>), dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>',9,56863316,5276562,5'</code></pre>
+</div>
+</div>
+<p>Already with this basic transformer decoder, we reach a loss that is lower than the bigram model, but it is still not completing the task appropiately. Let’s keep the work up!</p>
+</section>
+<section id="positional-encoding" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="positional-encoding"><span class="header-section-number">3.3</span> Positional encoding</h2>
+<p>With self-attention, our model can combine the information between all the tokens, but it has no notion about the relative distances between them. To solve this, we can provide our model with a positional encoding, as it is illustrated in <a href="#fig-transformer" class="quarto-xref">Figure&nbsp;2</a>.</p>
+<p>There are many different ways to provide the model with information about the token positions. In GPT, they use a positional embedding. This is the same as the vocabulary embedding with the difference that we will have as many rows in the embedding matrix as the maximum sequence length that we allow our model to process.</p>
+<p>Let’s implement it!</p>
+<div id="cell-62" class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPT(nn.Module):</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"GPT-like model"</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, vocab_sz, emb_sz, head_sz, seq_len):</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.seq_len <span class="op">=</span> seq_len</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding_tkn <span class="op">=</span> nn.Embedding(vocab_sz, emb_sz)</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding_pos <span class="op">=</span> nn.Embedding(seq_len, emb_sz)</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.attn <span class="op">=</span> CausalAttentionHead(emb_sz, head_sz, seq_len)</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.linear <span class="op">=</span> nn.Linear(head_sz, vocab_sz)</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>        emb_tkn <span class="op">=</span> <span class="va">self</span>.embedding_tkn(x)</span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>        emb_pos <span class="op">=</span> <span class="va">self</span>.embedding_pos(torch.arange(x.shape[<span class="dv">1</span>], device<span class="op">=</span>x.device))</span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> emb_tkn <span class="op">+</span> emb_pos</span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.attn(x)</span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.linear(x)</span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">@torch.no_grad</span>()</span>
+<span id="cb54-19"><a href="#cb54-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> generate(<span class="va">self</span>, x, new_tkn):</span>
+<span id="cb54-20"><a href="#cb54-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(new_tkn):</span>
+<span id="cb54-21"><a href="#cb54-21" aria-hidden="true" tabindex="-1"></a>            context <span class="op">=</span> x[:, <span class="op">-</span><span class="va">self</span>.seq_len:]</span>
+<span id="cb54-22"><a href="#cb54-22" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> <span class="va">self</span>(context)</span>
+<span id="cb54-23"><a href="#cb54-23" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> logits[:, <span class="op">-</span><span class="dv">1</span>, :]</span>
+<span id="cb54-24"><a href="#cb54-24" aria-hidden="true" tabindex="-1"></a>            probs <span class="op">=</span> F.softmax(logits, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb54-25"><a href="#cb54-25" aria-hidden="true" tabindex="-1"></a>            new_tkn <span class="op">=</span> torch.multinomial(probs, <span class="dv">1</span>)</span>
+<span id="cb54-26"><a href="#cb54-26" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> torch.cat((x, new_tkn), dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb54-27"><a href="#cb54-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-63" class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">7</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>batch_size, seq_len <span class="op">=</span> <span class="dv">64</span>, <span class="dv">60</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>emb_sz, head_sz <span class="op">=</span> <span class="dv">16</span>, <span class="dv">16</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> GPT(vocab_size, emb_sz, head_sz, seq_len).to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-64" class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>train_model(<span class="dv">1000</span>, gpt, <span class="fl">5e-4</span>, batch_size, seq_len)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Step 0: train loss 2.3120, val loss 2.0298
+Step 200: train loss 1.6010, val loss 1.3704
+Step 400: train loss 1.5358, val loss 1.3347
+Step 600: train loss 1.4745, val loss 1.2902
+Step 800: train loss 1.4576, val loss 1.2444
+Step 999: train loss 1.4536, val loss 1.2777</code></pre>
+</div>
+</div>
+<div id="cell-65" class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.ones((<span class="dv">1</span>, <span class="dv">1</span>), dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>gpt.<span class="bu">eval</span>()</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'01100,,91100,,02101,,'</code></pre>
+</div>
+</div>
+<p>We have significantly reduced the loss, but it actually seems to do worse!</p>
+</section>
+<section id="multi-head-attention" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="multi-head-attention"><span class="header-section-number">3.4</span> Multi-head attention</h2>
+<p>So far, we have only used a single attention head in our model. In the GPT architecture, we use multi-head attention which consists of running various independent. Then, we concatenate the output of the different heads and project the resulting feature vectors to the original embedding size.</p>
+<div id="cell-67" class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MultiHeadAttention(nn.Module):</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Multiple parallel self-attention heads."</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, num_heads, emb_sz, head_sz, seq_len):</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.heads <span class="op">=</span> nn.ModuleList([CausalAttentionHead(emb_sz, head_sz, seq_len)</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>                                    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_heads)])</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.linear <span class="op">=</span> nn.Linear(head_sz<span class="op">*</span>num_heads, emb_sz)</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> torch.cat([head(x) <span class="cf">for</span> head <span class="kw">in</span> <span class="va">self</span>.heads], dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.linear(x)</span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Usually, we take the embedding size and divide it by the number of heads to have better control of the matrix sizes within our model.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here, we have implemented the heads sequentially instead of in parallel. There is a much faster way to compute all the attention heads at once. The tensor dimensions in the self-attention module are <code>[BS, T, E]</code>, where <code>E</code> denotes the embedding size. Since all the opperations are carried over the last two dimensions, if we reshape the Q, K, V tensors to <code>[BS, NH, T, HS]</code>, where <code>NH</code> and <code>HS</code> denote the number of heads and head size, respectively, we can compute the self-attention for all the heads at once.</p>
+</div>
+</div>
+<div id="cell-69" class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPT(nn.Module):</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"GPT-like model"</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, vocab_sz, emb_sz, n_head, seq_len):</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.seq_len <span class="op">=</span> seq_len</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding_tkn <span class="op">=</span> nn.Embedding(vocab_sz, emb_sz)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding_pos <span class="op">=</span> nn.Embedding(seq_len, emb_sz)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>        head_sz <span class="op">=</span> emb_sz <span class="op">//</span> n_head</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.attn <span class="op">=</span> MultiHeadAttention(n_head, emb_sz, head_sz, seq_len)</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.linear <span class="op">=</span> nn.Linear(emb_sz, vocab_sz)</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>        emb_tkn <span class="op">=</span> <span class="va">self</span>.embedding_tkn(x)</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>        emb_pos <span class="op">=</span> <span class="va">self</span>.embedding_pos(torch.arange(x.shape[<span class="dv">1</span>], device<span class="op">=</span>x.device))</span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> emb_tkn <span class="op">+</span> emb_pos</span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.attn(x)</span>
+<span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.linear(x)</span>
+<span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb61-19"><a href="#cb61-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> generate(<span class="va">self</span>, x, new_tkn):</span>
+<span id="cb61-20"><a href="#cb61-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(new_tkn):</span>
+<span id="cb61-21"><a href="#cb61-21" aria-hidden="true" tabindex="-1"></a>            context <span class="op">=</span> x[:, <span class="op">-</span><span class="va">self</span>.seq_len:]</span>
+<span id="cb61-22"><a href="#cb61-22" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> <span class="va">self</span>(context)</span>
+<span id="cb61-23"><a href="#cb61-23" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> logits[:, <span class="op">-</span><span class="dv">1</span>, :]</span>
+<span id="cb61-24"><a href="#cb61-24" aria-hidden="true" tabindex="-1"></a>            probs <span class="op">=</span> F.softmax(logits, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb61-25"><a href="#cb61-25" aria-hidden="true" tabindex="-1"></a>            new_tkn <span class="op">=</span> torch.multinomial(probs, <span class="dv">1</span>)</span>
+<span id="cb61-26"><a href="#cb61-26" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> torch.cat((x, new_tkn), dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb61-27"><a href="#cb61-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-70" class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">7</span>)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>batch_size, seq_len <span class="op">=</span> <span class="dv">64</span>, <span class="dv">60</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>emb_sz, n_head <span class="op">=</span> <span class="dv">16</span>, <span class="dv">2</span></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> GPT(vocab_size, emb_sz, n_head, seq_len).to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-71" class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> train_model(<span class="dv">5000</span>, gpt, <span class="fl">2e-4</span>, batch_size, seq_len)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Step 0: train loss 2.4114, val loss 2.4379
+Step 200: train loss 2.3326, val loss 2.3935
+Step 400: train loss 2.2342, val loss 2.3961
+Step 600: train loss 2.1180, val loss 2.3374
+Step 800: train loss 1.9681, val loss 2.1082
+Step 1000: train loss 1.7882, val loss 1.8349
+Step 1200: train loss 1.5916, val loss 1.5813
+Step 1400: train loss 1.4464, val loss 1.3999
+Step 1600: train loss 1.3529, val loss 1.2617
+Step 1800: train loss 1.3099, val loss 1.1754
+Step 2000: train loss 1.2533, val loss 1.1168
+Step 2200: train loss 1.2490, val loss 1.0802
+Step 2400: train loss 1.2136, val loss 1.0455
+Step 2600: train loss 1.2242, val loss 1.0329
+Step 2800: train loss 1.2253, val loss 1.1018
+Step 3000: train loss 1.2024, val loss 0.9837
+Step 3200: train loss 1.1999, val loss 1.0419
+Step 3400: train loss 1.2010, val loss 1.0247
+Step 3600: train loss 1.2008, val loss 0.9965
+Step 3800: train loss 1.1920, val loss 1.0156
+Step 4000: train loss 1.2110, val loss 0.9998
+Step 4200: train loss 1.1858, val loss 1.0006
+Step 4400: train loss 1.1929, val loss 1.0027
+Step 4600: train loss 1.1902, val loss 1.0175
+Step 4800: train loss 1.1692, val loss 0.9676
+Step 4999: train loss 1.1663, val loss 1.0324</code></pre>
+</div>
+</div>
+<div id="cell-72" class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.ones((<span class="dv">1</span>, <span class="dv">1</span>), dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>gpt.<span class="bu">eval</span>()</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'081111218121121812,12'</code></pre>
+</div>
+</div>
+</section>
+<section id="feedforward" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="feedforward"><span class="header-section-number">3.5</span> Feedforward</h2>
+<p>In the transformer architecture, we find multi-head attention layers that are followed by feedforward parts. These two main parts constitute the main body of a repeating block that we can then stack several times.</p>
+<p>With the self-attention, we had tokens exchanging information. With the feedforward part, we let the tokens elaborate on this information.</p>
+<p>Let’s implement the feedforward bit of the network. It is a multi-layer perceptron with a single hidden layer.</p>
+<div id="cell-74" class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> FeedForward(nn.Module):</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, emb_sz, dropout<span class="op">=</span><span class="fl">0.2</span>):</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.layers <span class="op">=</span> nn.Sequential(nn.Linear(emb_sz, <span class="dv">4</span><span class="op">*</span>emb_sz),</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>                                    nn.GELU(),</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>                                    nn.Linear(<span class="dv">4</span><span class="op">*</span>emb_sz, emb_sz),</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>                                    nn.Dropout(dropout))</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.layers(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="decoder-block" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="decoder-block"><span class="header-section-number">3.6</span> Decoder block</h2>
+<p>We grow our network by stacking decoder blocks. These have an initial self-attention part followed by a feedforward part. Concatenating blocks, we alternate between both, resulting in a combination of token communication and local computation.</p>
+<p>There are two main key elements in the decoder block that we have not implemented yet. These are the residual paths and the <a href="https://arxiv.org/abs/1607.06450">layer normalization</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Beware that in the GPT architecture, the normalization layers go <strong>before</strong> the self-attention and feedforward layers. This is an enhancement with respect to the original transformer architecture from <a href="#fig-transformer" class="quarto-xref">Figure&nbsp;2</a>.</p>
+</div>
+</div>
+<div id="cell-76" class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DecoderBlock(nn.Module):</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, emb_sz, n_heads, seq_len):</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.norm_1 <span class="op">=</span> nn.LayerNorm(emb_sz)</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>        head_sz <span class="op">=</span> emb_sz <span class="op">//</span> n_heads</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.heads <span class="op">=</span> MultiHeadAttention(n_heads, emb_sz, head_sz, seq_len)</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.norm_2 <span class="op">=</span> nn.LayerNorm(emb_sz)</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.ffw <span class="op">=</span> FeedForward(emb_sz)</span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> x <span class="op">+</span> <span class="va">self</span>.heads(<span class="va">self</span>.norm_1(x))</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> x <span class="op">+</span> <span class="va">self</span>.ffw(<span class="va">self</span>.norm_2(x))</span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can rewrite our GPT models stacking a few blocks together.</p>
+<div id="cell-78" class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPT(nn.Module):</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"GPT-like model"</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, vocab_sz, emb_sz, n_blocks, n_heads, seq_len):</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.seq_len <span class="op">=</span> seq_len</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding_tkn <span class="op">=</span> nn.Embedding(vocab_sz, emb_sz)</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.embedding_pos <span class="op">=</span> nn.Embedding(seq_len, emb_sz)</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.blocks <span class="op">=</span> nn.Sequential(<span class="op">*</span>[DecoderBlock(emb_sz, n_heads, seq_len)</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>                                      <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_blocks)])</span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.layer_norm <span class="op">=</span> nn.LayerNorm(emb_sz)</span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.linear <span class="op">=</span> nn.Linear(emb_sz, vocab_sz)</span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a>        emb_tkn <span class="op">=</span> <span class="va">self</span>.embedding_tkn(x)</span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a>        emb_pos <span class="op">=</span> <span class="va">self</span>.embedding_pos(torch.arange(x.shape[<span class="dv">1</span>], device<span class="op">=</span>x.device))</span>
+<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> emb_tkn <span class="op">+</span> emb_pos</span>
+<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.blocks(x)</span>
+<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.linear(<span class="va">self</span>.layer_norm(x))</span>
+<span id="cb69-19"><a href="#cb69-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb69-20"><a href="#cb69-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> generate(<span class="va">self</span>, x, new_tkn):</span>
+<span id="cb69-21"><a href="#cb69-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(new_tkn):</span>
+<span id="cb69-22"><a href="#cb69-22" aria-hidden="true" tabindex="-1"></a>            context <span class="op">=</span> x[:, <span class="op">-</span><span class="va">self</span>.seq_len:]</span>
+<span id="cb69-23"><a href="#cb69-23" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> <span class="va">self</span>(context)</span>
+<span id="cb69-24"><a href="#cb69-24" aria-hidden="true" tabindex="-1"></a>            logits <span class="op">=</span> logits[:, <span class="op">-</span><span class="dv">1</span>, :]</span>
+<span id="cb69-25"><a href="#cb69-25" aria-hidden="true" tabindex="-1"></a>            probs <span class="op">=</span> F.softmax(logits, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb69-26"><a href="#cb69-26" aria-hidden="true" tabindex="-1"></a>            new_tkn <span class="op">=</span> torch.multinomial(probs, <span class="dv">1</span>)</span>
+<span id="cb69-27"><a href="#cb69-27" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> torch.cat((x, new_tkn), dim<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb69-28"><a href="#cb69-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-79" class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">7</span>)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>batch_size, seq_len <span class="op">=</span> <span class="dv">64</span>, <span class="dv">60</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>emb_sz, n_blocks, n_heads <span class="op">=</span> <span class="dv">16</span>, <span class="dv">3</span>, <span class="dv">2</span></span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> GPT(vocab_size, emb_sz, n_blocks, n_heads, seq_len).to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-80" class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> train_model(<span class="dv">5000</span>, gpt, <span class="fl">2e-4</span>, batch_size, seq_len)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Step 0: train loss 2.5447, val loss 2.5251
+Step 200: train loss 2.3506, val loss 2.4647
+Step 400: train loss 2.3077, val loss 2.5329
+Step 600: train loss 2.2680, val loss 2.5167
+Step 800: train loss 2.2413, val loss 2.5738
+Step 1000: train loss 2.2003, val loss 2.5733
+Step 1200: train loss 2.1812, val loss 2.5701
+Step 1400: train loss 2.1544, val loss 2.4687
+Step 1600: train loss 2.1205, val loss 2.5322
+Step 1800: train loss 2.0167, val loss 2.2486
+Step 2000: train loss 1.8641, val loss 2.1164
+Step 2200: train loss 1.6780, val loss 1.7356
+Step 2400: train loss 1.4727, val loss 1.4668
+Step 2600: train loss 1.3467, val loss 1.2514
+Step 2800: train loss 1.2467, val loss 1.1161
+Step 3000: train loss 1.2174, val loss 1.0631
+Step 3200: train loss 1.1694, val loss 1.0006
+Step 3400: train loss 1.1376, val loss 0.9736
+Step 3600: train loss 1.1015, val loss 0.9086
+Step 3800: train loss 1.0782, val loss 0.9290
+Step 4000: train loss 1.0529, val loss 0.8534
+Step 4200: train loss 1.0305, val loss 0.8555
+Step 4400: train loss 0.9912, val loss 0.8366
+Step 4600: train loss 0.9993, val loss 0.8055
+Step 4800: train loss 0.9802, val loss 0.8178
+Step 4999: train loss 0.9659, val loss 0.7985</code></pre>
+</div>
+</div>
+<div id="cell-81" class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.ones((<span class="dv">1</span>, <span class="dv">1</span>), dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>gpt.<span class="bu">eval</span>()</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'050547561056756105675'</code></pre>
+</div>
+</div>
+<p>Technically, this generation is not wrong. Let’s provide it with a bit of extra context.</p>
+<div id="cell-83" class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.tensor([[<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">0</span>]], dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">40</span>).tolist()[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'2333,2334,3,236433,232433,232433,232477,236433,23,'</code></pre>
+</div>
+</div>
+<p>It’s not perfect, but we’re getting there.</p>
+</section>
+<section id="go-big-or-go-home" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="go-big-or-go-home"><span class="header-section-number">3.7</span> Go big or go home</h2>
+<p>Let’s see how far we can push the model. As we grow the newtork, it is essential that we add some regularization, such as dropout.</p>
+<div id="cell-85" class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">7</span>)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>batch_size, seq_len <span class="op">=</span> <span class="dv">64</span>, <span class="dv">60</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>emb_sz, n_blocks, n_heads <span class="op">=</span> <span class="dv">64</span>, <span class="dv">4</span>, <span class="dv">8</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> GPT(vocab_size, emb_sz, n_blocks, n_heads, seq_len).to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-86" class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> train_model(<span class="dv">10000</span>, gpt, <span class="fl">1e-4</span>, batch_size, seq_len)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Step 0: train loss 2.5046, val loss 2.4860
+Step 200: train loss 2.1752, val loss 2.4264
+Step 400: train loss 2.0528, val loss 2.3285
+Step 600: train loss 1.9620, val loss 2.2053
+Step 800: train loss 1.6613, val loss 1.9140
+Step 1000: train loss 1.2678, val loss 1.3279
+Step 1200: train loss 1.0419, val loss 0.9195
+Step 1400: train loss 0.9266, val loss 0.7967
+Step 1600: train loss 0.8495, val loss 0.7225
+Step 1800: train loss 0.8086, val loss 0.6540
+Step 2000: train loss 0.7846, val loss 0.6082
+Step 2200: train loss 0.7407, val loss 0.5484
+Step 2400: train loss 0.7069, val loss 0.5276
+Step 2600: train loss 0.6790, val loss 0.5213
+Step 2800: train loss 0.6550, val loss 0.4604
+Step 3000: train loss 0.6206, val loss 0.4564
+Step 3200: train loss 0.6230, val loss 0.4313
+Step 3400: train loss 0.5819, val loss 0.4089
+Step 3600: train loss 0.5919, val loss 0.3990
+Step 3800: train loss 0.5422, val loss 0.3756
+Step 4000: train loss 0.5757, val loss 0.3539
+Step 4200: train loss 0.5493, val loss 0.3613
+Step 4400: train loss 0.5248, val loss 0.3461
+Step 4600: train loss 0.5180, val loss 0.3421
+Step 4800: train loss 0.5198, val loss 0.3184
+Step 5000: train loss 0.4806, val loss 0.3184
+Step 5200: train loss 0.4996, val loss 0.3353
+Step 5400: train loss 0.5133, val loss 0.3156
+Step 5600: train loss 0.4976, val loss 0.3038
+Step 5800: train loss 0.5066, val loss 0.3003
+Step 6000: train loss 0.4901, val loss 0.2954
+Step 6200: train loss 0.4883, val loss 0.2951
+Step 6400: train loss 0.4717, val loss 0.2944
+Step 6600: train loss 0.4752, val loss 0.2763
+Step 6800: train loss 0.4771, val loss 0.2869
+Step 7000: train loss 0.4656, val loss 0.2769
+Step 7200: train loss 0.4768, val loss 0.2656
+Step 7400: train loss 0.4678, val loss 0.2896
+Step 7600: train loss 0.4505, val loss 0.2976
+Step 7800: train loss 0.4683, val loss 0.2885
+Step 8000: train loss 0.4828, val loss 0.2718
+Step 8200: train loss 0.4449, val loss 0.2778
+Step 8400: train loss 0.4472, val loss 0.2672
+Step 8600: train loss 0.4702, val loss 0.2790
+Step 8800: train loss 0.4432, val loss 0.2778
+Step 9000: train loss 0.4936, val loss 0.2839
+Step 9200: train loss 0.4809, val loss 0.2610
+Step 9400: train loss 0.4890, val loss 0.2844
+Step 9600: train loss 0.4797, val loss 0.2951
+Step 9800: train loss 0.4548, val loss 0.2792
+Step 9999: train loss 0.4566, val loss 0.2632</code></pre>
+</div>
+</div>
+<div id="cell-87" class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.ones((<span class="dv">1</span>, <span class="dv">1</span>), dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>gpt.<span class="bu">eval</span>()</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'0,383421,383422,38342'</code></pre>
+</div>
+</div>
+<p>This model seems to know what it’s doing. Let’s try with a different context.</p>
+<div id="cell-89" class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.tensor([[<span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">5</span>, <span class="dv">6</span>]], dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'44,384545,384546,384547,384'</code></pre>
+</div>
+</div>
+<div id="cell-90" class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.tensor([[<span class="dv">0</span>]], dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">20</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>',853803,853804,853805'</code></pre>
+</div>
+</div>
+<p>Promising. Let’s see more!</p>
+<div id="cell-92" class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.tensor([[<span class="dv">0</span>]], dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">80</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>',686570,686571,686572,686574,686575,686576,686577,686577,686578,686579,686580,686'</code></pre>
+</div>
+</div>
+<p>In this sequence we see a couple of artifacts: it skips the 686573 and it repeats the 686577. However, it has learned how to change from 79 to 80. Let’s try again.</p>
+<div id="cell-94" class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> torch.tensor([[<span class="dv">0</span>]], dtype<span class="op">=</span>torch.<span class="bu">long</span>).to(device)</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>tkn.decode(gpt.generate(context, <span class="dv">80</span>)[<span class="dv">0</span>].tolist())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>',149120,149121,149122,149123,149124,149125,149126,149127,149128,149129,149130,149'</code></pre>
+</div>
+</div>
+<p>Flawless. This model rocks!</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/BorjaRequena\.github\.io\/Neural-Network-Course");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/generative/language_models.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

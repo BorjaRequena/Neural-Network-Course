@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Borja Requena">
+<meta name="description" content="How do machines learn?">
+
+<title>Introduction to Machine Learning – lectures_ml</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="Introduction to Machine Learning – lectures_ml">
+<meta property="og:description" content="How do machines learn?">
+<meta property="og:site_name" content="lectures_ml">
+<meta name="twitter:title" content="Introduction to Machine Learning – lectures_ml">
+<meta name="twitter:description" content="How do machines learn?">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">lectures_ml</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/Neural-Network-Course"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../course/introduction.html">Introduction to Machine Learning</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/introduction.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Introduction to Machine Learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linear models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_models/linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linear regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_models/polynomial_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Polynomial fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_models/logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/linear_models/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Perceptron</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/probabilistic_view.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A probabilistic view on machine learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../course/applications/applications-index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Machine learning application overview</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications/applications-cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in computer vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications/applications-nlp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks in natural language processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/applications/applications-tabular.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Typical tasks with structured data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Fundamentals of deep learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/neural_networks_from_scratch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/pytorch_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural networks with PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/automatic_differentiation_pytorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automatic differentiation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/multiclass_classification_problem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiclass classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/deep_learning/regularization_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural Networks regularization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/montecarlo_integration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo Integration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/rbm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Restricted Boltzmann Machines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Generative models</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/generative/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/generative/language_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Language models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Automatic differentiation for quantum computing</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/quantum/qaoa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quantum Approximate Optimization Algorithm (QAOA) from scratch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course/quantum/vqe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Variational Quantum Eigensolver (VQE) from scratch</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../homeworks/index_homework.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Homework</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1 - Regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/perceptron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2 - Perceptron</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/generative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3 - Generative models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/ml_physics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4 - ML techniques in physics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../homeworks/paper_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Paper report</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Library</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/data_gen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Generation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/losses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Loss functions and gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lib_nbs/optimizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimizers</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-is-machine-learning" id="toc-what-is-machine-learning" class="nav-link active" data-scroll-target="#what-is-machine-learning"><span class="header-section-number">1</span> What is machine learning?</a></li>
+  <li><a href="#machine-learning-tasks" id="toc-machine-learning-tasks" class="nav-link" data-scroll-target="#machine-learning-tasks"><span class="header-section-number">2</span> Machine learning tasks</a></li>
+  <li><a href="#types-of-learning" id="toc-types-of-learning" class="nav-link" data-scroll-target="#types-of-learning"><span class="header-section-number">3</span> Types of learning</a>
+  <ul class="collapse">
+  <li><a href="#supervised-learning" id="toc-supervised-learning" class="nav-link" data-scroll-target="#supervised-learning"><span class="header-section-number">3.1</span> Supervised learning</a></li>
+  <li><a href="#unsupervised-learning" id="toc-unsupervised-learning" class="nav-link" data-scroll-target="#unsupervised-learning"><span class="header-section-number">3.2</span> Unsupervised learning</a></li>
+  <li><a href="#reinforcement-learning" id="toc-reinforcement-learning" class="nav-link" data-scroll-target="#reinforcement-learning"><span class="header-section-number">3.3</span> Reinforcement learning</a></li>
+  </ul></li>
+  <li><a href="#learning-as-an-optimization-task" id="toc-learning-as-an-optimization-task" class="nav-link" data-scroll-target="#learning-as-an-optimization-task"><span class="header-section-number">4</span> Learning as an optimization task</a></li>
+  <li><a href="#capacity-overfitting-and-underfitting" id="toc-capacity-overfitting-and-underfitting" class="nav-link" data-scroll-target="#capacity-overfitting-and-underfitting"><span class="header-section-number">5</span> Capacity, overfitting and underfitting</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/introduction.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../course/index.html">Course</a></li><li class="breadcrumb-item"><a href="../course/introduction.html">Introduction to Machine Learning</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Introduction to Machine Learning</h1>
+</div>
+
+<div>
+  <div class="description">
+    How do machines learn?
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Borja Requena </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This introduction has been adapted from Borja’s PhD thesis <span class="citation" data-cites="requena2024">(<a href="#ref-requena2024" role="doc-biblioref">Requena 2024</a>)</span>.</p>
+</div>
+</div>
+<section id="what-is-machine-learning" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> What is machine learning?</h1>
+<p>With the progress of technology, we encounter increasingly more complex and abstract problems that are hard to formalize mathematically. For instance, the problem of face recognition in images cannot be easily presented in a formal mathematical way, or tasks such as detecting new phases of matter may not even have a known mathematical formulation. Hence, these types of problems cannot be effectively addressed using standard hard-coded algorithms.</p>
+<p>The field of machine learning (ML) emerges as a new paradigm to develop algorithms that are not explicitly programmed, but learned from experience instead, typically in the form of data. <a href="#fig-programming_vs_ml" class="quarto-xref">Figure&nbsp;1</a> provides a visual comparison between traditional programming and ML. In traditional programming, an input task and a program to solve it yield the desired result after some computation. In ML, an input task and related data instances result in a program to solve the task. For example, the data can be pairs of problem examples and their solutions.</p>
+<p>This process heavily relies on applied statistics, emphasizing the use of computers to approximate complex functions. Deep learning <span class="citation" data-cites="goodfellow:2016">(<a href="#ref-goodfellow:2016" role="doc-biblioref">Goodfellow, Bengio, and Courville 2016</a>)</span>, a subfield of ML, is the maximum exponent of this trend. It employs parametrized hierarchical models to extract intricate patterns from data, achieving outstanding results across various tasks.</p>
+<div id="fig-programming_vs_ml" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-programming_vs_ml-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/programming_vs_ml.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-programming_vs_ml-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Traditional programming vs machine learning
+</figcaption>
+</figure>
+</div>
+<p>In short, an ML algorithm is an algorithm capable of learning from data. <strong>We can consider a computer program to learn from experience with respect to some class of tasks and performance measure if its performance in those tasks improves with experience</strong> <span class="citation" data-cites="Mitchell1997McGrawHill">(<a href="#ref-Mitchell1997McGrawHill" role="doc-biblioref">Mitchell 1997</a>)</span>. Hence, there are a few fundamental ingredients to any learning algorithm:</p>
+<ul>
+<li><strong>A task to solve</strong>: Tasks are often defined in terms of how examples or data instances should be processed. These are usually represented by vectors <span class="math inline">\(\mathbf{x}\in\mathbb{R}^n\)</span> where every entry is a <em>feature</em>. We show some typical ML tasks in the <a href="https://borjarequena.github.io/Neural-Network-Course/course/applications-index.html">applications chapter</a>.</li>
+<li><strong>A performance measure</strong>: A consistent quantitative measure of the ML algorithm’s performance on the task. These metrics can range from simple direct comparisons between the obtained and expected output, to more involved and task-specific functions.</li>
+<li><strong>Data (experience)</strong>: A data set containing a collection of data instances, potentially including the desired output <span class="math inline">\(\mathbf{y}\)</span> for each of them <span class="math inline">\(\{(\mathbf{x}_i,\mathbf{y}_i)\}\)</span>. We consider different types of learning depending on the kind of data set the algorithm is allowed to experience, as detailed in the <a href="#types-of-learning">types of learning section</a> below.</li>
+<li><strong>A model</strong>: The structure that encodes the resulting program. This can range from a parametrized linear function, to a combination of deep neural networks.</li>
+</ul>
+<p>In these terms, the learning process can be described as the iterative maximization of the model’s performance on the given task and data.</p>
+</section>
+<section id="machine-learning-tasks" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Machine learning tasks</h1>
+<p>The main ingredient in the learning process is a task. It is important to distinguish the objective task with the learning process itself. The latter is the process through which the ability to develop the task is acquired. For example, if we would like a robot to walk, walking is the task <span class="citation" data-cites="goodfellow:2016">(<a href="#ref-goodfellow:2016" role="doc-biblioref">Goodfellow, Bengio, and Courville 2016</a>)</span>.</p>
+<p>There are very diverse tasks that can be solved with ML. The most common ones are regression and classification tasks. In regression tasks, we typically assume a relationship between two variables of the form <span class="math inline">\(\mathbf{y}=f(\mathbf{x})\)</span>. In general, the two variables can be multi-dimensional, and the objective is to find the function <span class="math inline">\(f\)</span> that relates them. In classification tasks, the objective is to learn a function <span class="math inline">\(f\)</span> that assigns an input <span class="math inline">\(\mathbf{x}\)</span> to a certain category or label <span class="math inline">\(y\)</span> among a finite set of labels. Unlike in regression tasks, these categories do not need to have a numerical meaning and we typically assign them an integer index to encode them.</p>
+<p>We show some examples in the <a href="https://borjarequena.github.io/Neural-Network-Course/course/applications-index.html">machine learning application overview section</a>, and cover even more throughout the entire course!</p>
+</section>
+<section id="types-of-learning" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Types of learning</h1>
+<p>A crucial factor in the learning process is data, and its accessibility often determines the types of learning we can consider. The notions of task and data are intertwined: certain tasks can only be solved if sufficient data is available, and richer data enables the seamless transition between tasks. In the ML field, we typically refer to data in terms of a data set <span class="math inline">\(\mathcal{D}\)</span>, containing a finite amount of data instances often called <em>data points</em> or <em>examples</em> <span class="math inline">\(\mathbf{x}_i\)</span>. The data set may exclusively contain the data instances, <span class="math inline">\(\mathcal{D} = \{\mathbf{x}_i\}\)</span>, or they may also be accompanied by predefined labels or targets <span class="math inline">\(\mathbf{y}_i\)</span>, forming tuples <span class="math inline">\(\mathcal{D} = \{(\mathbf{x}_i,\mathbf{y}_i)\}\)</span>. In some cases, the data points can be organized into a <em>design matrix</em> <span class="math inline">\(\mathbf{X}\)</span>, formed by stacking <span class="math inline">\(\{\mathbf{x}_i\}\)</span> either row- or column-wise.</p>
+<p>Each element of every data point <span class="math inline">\(\mathbf{x}_i\)</span> is known as a <em>feature</em>, and it is a descriptor of a specific aspect of the example. Selecting the right features to characterize the object of interest can be challenging: too few might fail to capture all relevant aspects, whereas too many can lead to spurious correlations that interfere with the conclusions drawn from the data. Additionally, the data can be arbitrarily processed and transformed, for instance, subtracting the mean of every feature across the data set <span class="math inline">\(\mathcal{D}\)</span> from each data point prior to any further analysis. Determining the right data representation is a central problem in ML, as it is essential to perform any task, and it is the core of the field of representation learning.</p>
+<p>In general, the type of available data effectively defines the types of learning our model can be faced with. These are usually divided into three categories: supervised, unsupervised, and reinforcement learning.</p>
+<section id="supervised-learning" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="supervised-learning"><span class="header-section-number">3.1</span> Supervised learning</h2>
+<p>Supervised learning refers to ML algorithms that learn from <em>labeled</em> data <span class="math inline">\(\mathcal{D} = \{(\mathbf{x}_i,\mathbf{y}_i)\}\)</span>. There exist various approaches to supervised learning, spanning from statistical methods to classical ML and deep learning. In most cases, substantial amounts of data are required for the training process, which entails the accurate labeling of the data. This is usually considered one of the most significant drawbacks of supervised learning, as obtaining perfectly matched labels is not always feasible or may require extensive manual annotation by humans.</p>
+</section>
+<section id="unsupervised-learning" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="unsupervised-learning"><span class="header-section-number">3.2</span> Unsupervised learning</h2>
+<p>While labeled data may be scarce, we often have access to large amounts of raw unlabeled data <span class="math inline">\(\mathcal{D} = \{\mathbf{x}_i\}\)</span>. In this case, we can employ unsupervised learning, which refers to ML algorithms that learn from <em>unlabeled</em> data. Unsupervised learning can either be used for preliminary pre-processing steps, such as dimensionality reduction, or for representation learning, as in data clustering. Furthermore, it can be used to learn the underlying probability distribution of the data and generate entirely new examples.</p>
+</section>
+<section id="reinforcement-learning" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="reinforcement-learning"><span class="header-section-number">3.3</span> Reinforcement learning</h2>
+<p>In contrast to the two previous types of learning, some ML do not rely on a fixed data set <span class="math inline">\(\mathcal{D}\)</span>. For instance, in <em>reinforcement learning</em>, we usually do not even have a data set at all from the beginning. Instead, the learning algorithm interacts with an <em>environment</em> in a feedback loop to accomplish a given task. The data set is gradually shaped as the learning system collects experiences derived from these interactions. Different reinforcement learning algorithms manage the collected data differently, although it is always leveraged to achieve the objective task.</p>
+</section>
+</section>
+<section id="learning-as-an-optimization-task" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Learning as an optimization task</h1>
+<p>The model encodes the structure of the resulting program, and it is typically a function of the data, <span class="math inline">\(f(\mathbf{x})\)</span>, whose output depends on the task. For example, the output can be a class from a discrete set of possible classes in a classification task, or a complex-valued tensor in a regression task. Finding the function that provides the best mapping between the data and the desired outcome for a specific task is at the heart of ML. The model is usually characterized by a set of parameters <span class="math inline">\(\mathbf{\theta}\)</span>, and all its possible parametrizations form the set of functions known as the <em>hypothesis space</em>.</p>
+<p>The performance measure objectively quantifies the model’s performance in a given task. For example, in a classification task, we may consider the <em>accuracy</em>, which is the proportion of examples for which the model outputs the correct result. We can obtain the same information with the <em>error rate</em>, which is the proportion of missclassified examples. In a regression task, we may consider the squared difference between the model’s output and the desired value averaged over all data points, known as the mean squared error (MSE).</p>
+<p>We distinguish between <em>metrics</em> and <em>loss functions</em>. The former are performance measures that provide valuable information but may not be smooth, such as the accuracy. Conversely, the latter may not be as informative, but they are always differentiable. Typically, loss functions quantify the errors performed by the model such that smaller losses translate into better models.</p>
+<p>For example, in a regression task we may consider the the MSE as loss function, which is defined as: <span class="math display">\[\begin{equation}
+    \mathcal{L}_{\text{MSE}} = \frac{1}{n}\sum_i^n\left(y_i-f(\mathbf{x}_i)\right)^2\,,
+\end{equation}\]</span> where <span class="math inline">\(n\)</span> is the size of the data set and <span class="math inline">\(y_i\)</span> is the expected value for each sample <span class="math inline">\(\mathbf{x}_i\)</span>. For a classificationt task, we may use the cross-entropy loss function: <span class="math display">\[\begin{equation}
+    \mathcal{L}_{\text{CE}} = -\frac{1}{n}\sum_i^n \mathbf{y}_i^T\log(f(\mathbf{x}_i))\,.
+\end{equation}\]</span> In these cases, <span class="math inline">\(f(\mathbf{x}_i)\)</span> is a vector containing the probability that the data point <span class="math inline">\(\mathbf{x}_i\)</span> belongs to each of the possible classes, and <span class="math inline">\(\mathbf{y}_i\)</span> is the vector of the true class, e.g., <span class="math inline">\(\mathbf{y}_i=\left[0, 0, 1, 0\right]^T\)</span> encodes the third class in a four-class classification problem. The absolute value of <span class="math inline">\(\mathcal{L}_{\text{CE}}\)</span> does not provide a clear idea of the model’s performance, unlike the accuracy, but it is a smooth function in its domain.</p>
+<p><strong>Machines ``learn’’ by minimizing the loss function <span class="math inline">\(\mathcal{L}\)</span>, over the training data set</strong>, i.e., the data available during the learning process. Formally, the objective is to find the optimal model parameters <span class="math inline">\(\mathbf{\theta}^*\)</span> in the hypothesis space that minimize <span class="math inline">\(\mathcal{L}\)</span>. The minimization is usually performed by gradient-based techniques, hence the emphasis on the differentiability of <span class="math inline">\(\mathcal{L}\)</span>. Therefore, learning becomes an optimization process.</p>
+</section>
+<section id="capacity-overfitting-and-underfitting" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Capacity, overfitting and underfitting</h1>
+<p>The central challenge in ML is to ensure the model can <em>generalize</em> well. This means the resulting model should perform effectively on new data, never seen during the learning process. While learning, also known as training, our algorithm has access to the training data, as briefly introduced in the previous section. This allows us to quantify the performance over the so-called training set, obtaining a training error. To assess the generalization capabilities of the model, we hold out some data from the training process, forming a <em>test set</em>, and measuring the performance on this previously unseen data. This provides a test or generalization error. <strong>What distinguishes ML from mere function fitting is that the goal in ML is to keep both the training and test errors low, ensuring the proper generalization of the model.</strong></p>
+<p>Given that the parameter optimization of our model is performed in the training set, the expected test error is higher or equal than the expected training error. Their difference is known as the <em>generalization gap</em>, and it persists even when the training and test data are generated by identical probability distributions. Indeed, it may only disappear in the limit of infinite data. Hence, the overall performance of an ML model can be evaluated considering two factors: the training error and the generalization gap, which should both be as small as possible.</p>
+<p>These two factors are related to two main challenges of ML: overfitting and underfitting. In short, underfitting occurs whenever the training error is not low enough, meaning that the model is unable to successfully develop the task. Overfitting is characterized by a large generalization gap, which is often the result of a low training error combined with a high test error. In these cases, the generalization is hindered by the model learning the specific details of the training data, rather than capturing the main patterns. <a href="#fig-under_overfitting" class="quarto-xref">Figure&nbsp;2</a> shows a schematic depiction of both phenomena.</p>
+<div id="fig-under_overfitting" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-under_overfitting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/under_overfitting.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-under_overfitting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Schematic depiction of under- and overfitting
+</figcaption>
+</figure>
+</div>
+<p>The tendency of the model to under- or overfit can be tuned by changing the model’s <em>capacity</em>. The capacity can be loosely understood as the measure of a model’s ability to fit a wide variety of functions <span class="citation" data-cites="goodfellow:2016">(<a href="#ref-goodfellow:2016" role="doc-biblioref">Goodfellow, Bengio, and Courville 2016</a>)</span>. Models with low capacity may be unable to fit the training set, resulting in underfitting. On the other hand, models with a capacity much higher than required for the task tend to overfit, typically adjusting to the particularities of the training set, which may not be true for the general distribution. The challenge is to find the capacity that is ``just right’’ for the task.</p>
+<p>To address this challenge, the data set can be further split to include a <em>validation set</em>, resulting in three subsets: training, validation and test sets. The validation set serves as pseudo-test set to evaluate the model’s generalization capabilities and adjust its <em>hyper-parameters</em>, which may impact its capacity. For example, the capacity can be controlled by constraining the model’s hypothesis space. In the case of a linear regression model, the hypothesis space contains all linear functions. Generalizing the linear model to include polynomial functions up to the <span class="math inline">\(k\)</span>-th degree effectively increases its capacity, as shown in the <a href="https://borjarequena.github.io/Neural-Network-Course/course/polynomial_fit.html">linear models section</a>. Adjusting the maximum polynomial degree allows the fine-tuning of the model’s capacity. In a deep learning architectures, the capacity can be adjusted by tuning the number of neurons and their connections.</p>
+<p>Hence, <strong>the model learns from the data in the training set, and its hyper-parameters are tuned based on the generalization gap between the training and validation sets</strong>. This process may involve multiple training iterations as the model is being adjusted. Finally, <strong>the model’s performance is evaluated in the test, providing a real measure of its performance on unseen data</strong>.</p>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-goodfellow:2016" class="csl-entry" role="listitem">
+Goodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. <em>Deep <span>L</span>earning</em>. The MIT Press. <a href="https://doi.org/10.5555/3086952">https://doi.org/10.5555/3086952</a>.
+</div>
+<div id="ref-Mitchell1997McGrawHill" class="csl-entry" role="listitem">
+Mitchell, Tom M. 1997. <em>Machine Learning</em>. McGraw-Hill, New York.
+</div>
+<div id="ref-requena2024" class="csl-entry" role="listitem">
+Requena, Borja. 2024. <span>“A Machine Learning Ride in the Physics Theme Park: From Quantum to Biophysics.”</span> PhD thesis, ICFO - The Institute of Photonic Sciences. <a href="https://doi.org/10.5821/dissertation-2117-409132">https://doi.org/10.5821/dissertation-2117-409132</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/BorjaRequena\.github\.io\/Neural-Network-Course");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/BorjaRequena/Neural-Network-Course/blob/master/nbs/course/introduction.ipynb" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>
